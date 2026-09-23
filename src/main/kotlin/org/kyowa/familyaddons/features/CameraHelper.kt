@@ -13,9 +13,11 @@ import org.kyowa.familyaddons.config.FamilyConfigManager
 object CameraHelper {
 
     /** Nothing in this build lets the camera sit inside a block. */
+    @JvmStatic
     fun isClipEnabled(): Boolean = false
 
     /** The distance the player asked for, or null to leave it alone. */
+    @JvmStatic
     fun getCustomDistance(): Float? {
         val cfg = FamilyConfigManager.config.utilities
         if (!cfg.cameraDistEnabled) return null
