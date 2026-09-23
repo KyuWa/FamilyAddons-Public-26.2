@@ -27,6 +27,24 @@ class ContactConfig {
     @ConfigEditorButton(buttonText = "Send")
     var bugSend: Runnable = Runnable { org.kyowa.familyaddons.features.Contact.sendBug() }
 
+    // ── Question ─────────────────────────────────────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Ask a Question", desc = "")
+    @ConfigEditorAccordion(id = 3)
+    var questionAccordion = false
+
+    @JvmField
+    @ConfigAccordionId(id = 3)
+    @ConfigOption(name = "Your question", desc = "Anything you want to ask about the mod. The answer arrives in chat, in game, whenever it is written.")
+    @ConfigEditorText
+    var questionText: String = ""
+
+    @JvmField
+    @ConfigAccordionId(id = 3)
+    @ConfigOption(name = "Send", desc = "Send the question. One message every five minutes, three an hour.")
+    @ConfigEditorButton(buttonText = "Send")
+    var questionSend: Runnable = Runnable { org.kyowa.familyaddons.features.Contact.sendQuestion() }
+
     // ── Suggestion ───────────────────────────────────────────────────
     @Expose @JvmField
     @ConfigOption(name = "Suggest Something", desc = "")

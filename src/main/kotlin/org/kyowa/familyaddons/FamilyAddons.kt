@@ -34,6 +34,7 @@ object FamilyAddons : ClientModInitializer {
         KeyFetcher.fetchIfNeeded()
 
         TestCommand.register()
+        org.kyowa.familyaddons.features.Contact.register()
         KuudraState.register()
         WorldRenderDispatcher.register()
         CorpseESP.register()

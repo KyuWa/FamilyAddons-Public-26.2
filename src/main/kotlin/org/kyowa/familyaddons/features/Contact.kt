@@ -1,6 +1,8 @@
 package org.kyowa.familyaddons.features
 
 import com.google.gson.JsonParser
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.minecraft.client.Minecraft
 import org.kyowa.familyaddons.FamilyAddons
 import org.kyowa.familyaddons.KeyFetcher
@@ -24,6 +26,9 @@ import java.util.concurrent.CompletableFuture
 object Contact {
 
     private const val WORKER_URL = "https://fa-names.220395610.workers.dev/contact"
+    private const val REPLIES_URL = "https://fa-names.220395610.workers.dev/replies"
+    /** How often to look for an answer while playing. */
+    private const val POLL_TICKS = 20 * 60 * 3
     private const val MIN_LENGTH = 10
     private const val MAX_LENGTH = 1000
 
@@ -36,10 +41,15 @@ object Contact {
 
     fun sendBug() = send("bug", cfg().bugText) { cfg().bugText = "" }
     fun sendIdea() = send("idea", cfg().ideaText) { cfg().ideaText = "" }
+    fun sendQuestion() = send("question", cfg().questionText) { cfg().questionText = "" }
 
     private fun send(kind: String, raw: String, clear: () -> Unit) {
         val text = raw.trim()
-        val what = if (kind == "bug") "report" else "suggestion"
+        val what = when (kind) {
+            "bug" -> "report"
+            "question" -> "question"
+            else -> "suggestion"
+        }
         if (text.length < MIN_LENGTH) {
             FaChat.send("§cWrite a little more first — at least $MIN_LENGTH characters.")
             return
@@ -79,6 +89,45 @@ object Contact {
                 mc.execute { FaChat.send("§cCould not reach the server — try again in a moment.") }
             } finally {
                 sending = false
+            }
+        }
+    }
+
+    // ── replies coming back ──────────────────────────────────────────
+    private var ticker = 0
+
+    fun register() {
+        ClientPlayConnectionEvents.JOIN.register { _, _, _ -> ticker = POLL_TICKS - 20 * 8 }
+        ClientTickEvents.END_CLIENT_TICK.register {
+            if (++ticker < POLL_TICKS) return@register
+            ticker = 0
+            poll()
+        }
+    }
+
+    /** Asks for anything written back, and says it in chat. */
+    private fun poll() {
+        val uuid = Minecraft.getInstance().user?.profileId?.toString() ?: return
+        CompletableFuture.runAsync {
+            try {
+                val req = HttpRequest.newBuilder(URI.create("$REPLIES_URL?uuid=$uuid"))
+                    .header(KeyFetcher.SECRET_HEADER, KeyFetcher.SECRET_TOKEN)
+                    .timeout(Duration.ofSeconds(10)).GET().build()
+                val resp = http.send(req, HttpResponse.BodyHandlers.ofString())
+                if (resp.statusCode() != 200) return@runAsync
+                val replies = JsonParser.parseString(resp.body()).asJsonObject
+                    .getAsJsonArray("replies") ?: return@runAsync
+                if (replies.isEmpty) return@runAsync
+                Minecraft.getInstance().execute {
+                    for (element in replies) {
+                        val o = element.asJsonObject
+                        val from = o.get("from")?.asString?.takeIf { it.isNotBlank() } ?: "KyoWaa"
+                        val text = o.get("text")?.asString ?: continue
+                        FaChat.send("§6$from §7replied: §f$text")
+                    }
+                }
+            } catch (e: Exception) {
+                FamilyAddons.LOGGER.warn("Contact: could not check for replies: ${e.message}")
             }
         }
     }
