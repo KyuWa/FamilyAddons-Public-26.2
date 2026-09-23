@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture
  */
 object Contact {
 
-    private const val WORKER_URL = "https://fa-contact.220395610.workers.dev/contact"
+    private const val WORKER_URL = "https://fa-names.220395610.workers.dev/contact"
     private const val MIN_LENGTH = 10
     private const val MAX_LENGTH = 1000
 
