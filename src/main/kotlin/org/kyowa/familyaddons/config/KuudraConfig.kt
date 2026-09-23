@@ -342,11 +342,6 @@ class KuudraConfig {
     @ConfigEditorBoolean
     var kuudraHighlightEnabled = false
 
-    @Expose @JvmField
-    @ConfigAccordionId(id = 8)
-    @ConfigOption(name = "Behind Walls", desc = "Show the outline through walls. Off = only outline Kuudra when you have line of sight.")
-    @ConfigEditorBoolean
-    var kuudraHighlightBehindWalls = true
 
     @Expose @JvmField
     @ConfigAccordionId(id = 8)

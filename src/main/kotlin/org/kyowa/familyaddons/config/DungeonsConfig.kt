@@ -60,11 +60,6 @@ class DungeonsConfig {
     @ConfigEditorBoolean
     var dungeonHighlightEnabled = false
 
-    @Expose @JvmField
-    @ConfigAccordionId(id = 1)
-    @ConfigOption(name = "Behind Walls", desc = "Show the outlines through walls. Off = only mobs you have line of sight to are outlined.")
-    @ConfigEditorBoolean
-    var dungeonHighlightBehindWalls = true
 
     @Expose @JvmField
     @ConfigAccordionId(id = 1)

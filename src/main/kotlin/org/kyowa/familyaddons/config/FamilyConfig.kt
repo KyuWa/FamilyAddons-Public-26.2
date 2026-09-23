@@ -49,6 +49,26 @@ class FamilyConfig : Config() {
 
 
     @Expose @JvmField
+    @Category(name = "Waypoints", desc = "Waypoint features")
+    var waypoints = WaypointsConfig()
+
+    @Expose @JvmField
+    @Category(name = "Highlight/BE", desc = "Entity highlight and the bestiary tracker")
+    var highlight = HighlightConfig()
+
+    @Expose @JvmField
+    @Category(name = "Foraging", desc = "Foraging features")
+    var foraging = ForagingConfig()
+
+    @Expose @JvmField
+    @Category(name = "Critter Safari", desc = "Critter Safari — who has caught what, per biome")
+    var safari = SafariConfig()
+
+    @Expose @JvmField
+    @Category(name = "Contact", desc = "Report a bug or suggest something, straight to the mod's Discord")
+    var contact = ContactConfig()
+
+    @Expose @JvmField
     @Category(name = "Keybinds", desc = "GFS keybinds for quick item restocking")
     var keybinds = KeybindsConfig()
 

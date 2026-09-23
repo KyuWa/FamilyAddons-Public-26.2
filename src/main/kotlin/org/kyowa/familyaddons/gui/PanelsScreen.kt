@@ -68,12 +68,12 @@ class PanelsScreen(private val parent: Screen?, initialSearch: String) : Screen(
     /** Panels and the categories folded into each; a category listed nowhere gets its own. */
     private val layout = listOf(
         "General" to listOf("general"),
-        "Utilities" to listOf("utilities", "chatFilters", "translator", "party", "keybinds", "highlight", "worldScanner"),
+        "Utilities" to listOf("utilities", "chatFilters", "translator", "party", "keybinds", "highlight"),
         "SkyBlock" to listOf("mining", "crimsonIsle", "dungeons", "foraging", "safari", "waypoints"),
         "Kuudra" to listOf("kuudra"),
         "Disguise & Names" to listOf("playerDisguise", "nameChanger"),
         "Family Storage" to listOf("storage"),
-        "Dev" to listOf("dev"),
+        "Contact" to listOf("contact"),
     )
 
     private fun modulesOf(cat: CategorySpec, grouped: Boolean): List<Module> {

@@ -27,11 +27,6 @@ class UtilitiesConfig {
     @ConfigEditorBoolean
     var signMath = true
 
-    @Expose @JvmField
-    @ConfigAccordionId(id = 81)
-    @ConfigOption(name = "Item Prices", desc = "Show SkyBlock item prices in tooltips (AH, BIN, Bazaar, Pets).")
-    @ConfigEditorBoolean
-    var itemPrices = false
 
     @Expose @JvmField
     @ConfigAccordionId(id = 81)
@@ -41,7 +36,7 @@ class UtilitiesConfig {
 
     @Expose @JvmField
     @ConfigAccordionId(id = 81)
-    @ConfigOption(name = "Block Composter Sack Insert", desc = "In the Composter menu, the Insert Crops from Sacks cauldron cannot be clicked, so a misclick never empties your sacks into it. Its tooltip says Blocked by [FA].")
+    @ConfigOption(name = "Block Composter Sack Insert", desc = "In the Composter menu, the Insert Crops from Sacks cauldron cannot be clicked, so a misclick never empties your sacks into it.")
     @ConfigEditorBoolean
     var blockComposterSackInsert = false
 
@@ -51,22 +46,8 @@ class UtilitiesConfig {
     @ConfigEditorBoolean
     var arachneTimer = false
 
-    @Expose @JvmField
-    @ConfigOption(name = "Effects", desc = "")
-    @ConfigEditorAccordion(id = 82)
-    var effectsAccordion = false
 
-    @Expose @JvmField
-    @ConfigAccordionId(id = 82)
-    @ConfigOption(name = "No Blindness", desc = "Never apply the blindness effect to you (no black fog). Helps with motion sickness.")
-    @ConfigEditorBoolean
-    var noBlindness = false
 
-    @Expose @JvmField
-    @ConfigAccordionId(id = 82)
-    @ConfigOption(name = "No Nausea", desc = "Never apply the nausea effect to you (no screen warping). Helps with motion sickness.")
-    @ConfigEditorBoolean
-    var noNausea = false
 
     // ── Camera ────────────────────────────────────────────────────────
     @Expose @JvmField
@@ -74,11 +55,6 @@ class UtilitiesConfig {
     @ConfigEditorAccordion(id = 80)
     var cameraAccordion = false
 
-    @Expose @JvmField
-    @ConfigAccordionId(id = 80)
-    @ConfigOption(name = "Camera Clip", desc = "Allow the third-person camera to clip through blocks instead of zooming in when something is behind you.")
-    @ConfigEditorBoolean
-    var cameraClip = false
 
     @Expose @JvmField
     @ConfigAccordionId(id = 80)
@@ -98,23 +74,8 @@ class UtilitiesConfig {
     @ConfigEditorSlider(minValue = 3f, maxValue = 12f, minStep = 0.1f)
     var cameraDist = 4f
 
-    @Expose @JvmField
-    @ConfigAccordionId(id = 80)
-    @ConfigOption(name = "Freelook", desc = "Spin the camera around your character while your character keeps facing the way they were. Hold (or toggle) the keybind below.")
-    @ConfigEditorBoolean
-    var freelookEnabled = false
 
-    @Expose @JvmField
-    @ConfigAccordionId(id = 80)
-    @ConfigOption(name = "Freelook Toggle Mode", desc = "If on, the freelook key toggles freelook on/off. If off (default), freelook is only active while the key is held down.")
-    @ConfigEditorBoolean
-    var freelookToggleMode = false
 
-    @Expose @JvmField
-    @ConfigAccordionId(id = 80)
-    @ConfigOption(name = "Freelook Key", desc = "Hold (or press, if Toggle Mode is on) to activate freelook.")
-    @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN)
-    var freelookKey = GLFW.GLFW_KEY_UNKNOWN
 
     /** JSON list of {alias, command, key}, edited from the Command Shortcuts option. Not shown in the GUI. */
     @Expose @JvmField

@@ -152,7 +152,7 @@ object PartyTracker {
      */
     val runPlayers = HashSet<String>()
 
-    /** Called by AutoRequeue when the client lands in a Kuudra instance. */
+    /** Called by KuudraState when the client lands in a Kuudra instance. */
     fun startRun() { runPlayers.clear(); sampleRun() }
 
     fun sampleRun() { runPlayers.addAll(realPlayersInWorld()) }

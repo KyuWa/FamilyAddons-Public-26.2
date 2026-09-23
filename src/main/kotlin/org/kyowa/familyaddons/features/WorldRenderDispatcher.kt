@@ -1,0 +1,63 @@
+package org.kyowa.familyaddons.features
+
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
+import net.minecraft.client.Minecraft
+
+/**
+ * 26.2 replacement for the old LevelRenderer mixin: world rendering now goes
+ * through the deferred submit-node pipeline, and Fabric's COLLECT_SUBMITS
+ * event hands us the frame's [net.minecraft.client.renderer.SubmitNodeCollector]
+ * plus a camera-relative PoseStack — the same state the old
+ * `renderLevel` tail injection provided via the immediate BufferSource.
+ */
+object WorldRenderDispatcher {
+
+    fun register() {
+        LevelRenderEvents.COLLECT_SUBMITS.register { ctx ->
+            if (!Waypoints.hasWaypoints() &&
+                !CorpseESP.hasCachedCorpses() &&
+                !EntityHighlight.hasHighlighted() &&
+                !KuudraCrateWaypoints.hasCrates() &&
+                !KuudraStunWaypoint.hasWaypoint() &&
+                !ShulkerBoxHighlight.hasBoxes() &&
+                !SparklingCritterHighlight.hasTargets() &&
+                !FloorDropHighlight.hasTargets() &&
+                !org.kyowa.familyaddons.features.safari.BeeSpotHighlight.hasTargets() &&
+                !DungeonHighlight.hasRender() &&
+                !PearlWaypoints.hasWaypoints() &&
+                !PileWaypoints.hasBeams() &&
+                !SupplyWaypoints.hasBeams() &&
+                !KuudraFuelPhase.hasRender() &&
+                !KuudraBuildOverlay.hasRender() &&
+                !HelixWaypoints.hasWaypoints()
+            ) return@register
+
+            val client = Minecraft.getInstance()
+            val collector = ctx.submitNodeCollector()
+            val camera = client.gameRenderer.mainCamera()
+            val cam = camera.position()
+            val matrices = ctx.poseStack()
+
+            matrices.pushPose()
+
+            Waypoints.onWorldRender(matrices, collector, cam)
+            CorpseESP.onWorldRender(matrices, collector, cam)
+            EntityHighlight.onWorldRender(matrices, collector, cam)
+            KuudraCrateWaypoints.onWorldRender(matrices, collector, camera)
+            KuudraStunWaypoint.onWorldRender(matrices, collector, camera)
+            ShulkerBoxHighlight.onWorldRender(matrices, collector, camera)
+            SparklingCritterHighlight.onWorldRender(matrices, collector, camera)
+            FloorDropHighlight.onWorldRender(matrices, collector, camera)
+            org.kyowa.familyaddons.features.safari.BeeSpotHighlight.onWorldRender(matrices, collector, camera)
+            DungeonHighlight.onWorldRender(matrices, collector, camera)
+            PearlWaypoints.onWorldRender(matrices, collector, camera)
+            PileWaypoints.onWorldRender(matrices, collector, camera)
+            SupplyWaypoints.onWorldRender(matrices, collector, camera)
+            KuudraFuelPhase.onWorldRender(matrices, collector, camera)
+            KuudraBuildOverlay.onWorldRender(matrices, collector, camera)
+            HelixWaypoints.onWorldRender(matrices, collector, camera)
+
+            matrices.popPose()
+        }
+    }
+}
