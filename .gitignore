@@ -1,0 +1,10 @@
+# Gradle / build
+.gradle/
+build/
+out/
+
+# Kotlin
+.kotlin/
+
+# Fabric Loom dev run directory
+run/

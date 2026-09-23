@@ -1,0 +1,709 @@
+package org.kyowa.familyaddons.config
+
+import com.google.gson.annotations.Expose
+import io.github.notenoughupdates.moulconfig.annotations.*
+
+/**
+ * All Kuudra features in one category. Merged from the old
+ * "Solo Kuudra" (Gorilla Tactics, Pearl Timer) and
+ * "Kuudra Crate & Pearl" (Crate Hitbox, Pearl Waypoints) categories.
+ * Every feature lives in its own labeled accordion.
+ */
+class KuudraConfig {
+
+    // ── Auto Requeue accordion (id=7) ─────────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Auto Requeue", desc = "")
+    @ConfigEditorAccordion(id = 7)
+    var autoRequeueAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 7)
+    @ConfigOption(name = "Auto Requeue", desc = "Auto requeue for Kuudra after each run.")
+    @ConfigEditorBoolean
+    var autoRequeue = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 7)
+    @ConfigOption(name = "Requeue Basic", desc = "Auto requeue for Basic tier")
+    @ConfigEditorBoolean
+    var requeueBasic = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 7)
+    @ConfigOption(name = "Requeue Hot", desc = "Auto requeue for Hot tier")
+    @ConfigEditorBoolean
+    var requeueHot = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 7)
+    @ConfigOption(name = "Requeue Burning", desc = "Auto requeue for Burning tier")
+    @ConfigEditorBoolean
+    var requeueBurning = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 7)
+    @ConfigOption(name = "Requeue Fiery", desc = "Auto requeue for Fiery tier")
+    @ConfigEditorBoolean
+    var requeueFiery = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 7)
+    @ConfigOption(name = "Requeue Infernal", desc = "Auto requeue for Infernal tier")
+    @ConfigEditorBoolean
+    var requeueInfernal = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 7)
+    @ConfigOption(name = "Check Party Size", desc = "Cancel requeue if party has fewer than 4 players.")
+    @ConfigEditorBoolean
+    var checkPartySize = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 7)
+    @ConfigOption(name = "Requeue Delay", desc = "Seconds to wait before requeuing after Kuudra ends.")
+    @ConfigEditorSlider(minValue = 0f, maxValue = 10f, minStep = 1f)
+    var requeueDelaySecs = 0f
+
+    // ── DT Title accordion (id=1) ─────────────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "DT Title", desc = "")
+    @ConfigEditorAccordion(id = 1)
+    var dtTitleAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 1)
+    @ConfigOption(name = "Enable DT Title", desc = "Show a fading centered title when someone requests DT in party chat.")
+    @ConfigEditorBoolean
+    var dtTitle = false
+
+    // -1 = auto-center
+    @Expose @JvmField var dtTitleHudX = -1
+    @Expose @JvmField var dtTitleHudY = -1
+    @Expose @JvmField var dtTitleScale = "2.0"
+
+    // ── Key Tracker accordion (id=2) ──────────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Key Tracker", desc = "")
+    @ConfigEditorAccordion(id = 2)
+    var keyTrackerAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 2)
+    @ConfigOption(name = "Enable Key Tracker", desc = "Show key material counts in Mage/Barbarian shop.")
+    @ConfigEditorBoolean
+    var keyTracker = false
+
+    @Expose @JvmField var keyTrackerHudX = 10
+    @Expose @JvmField var keyTrackerHudY = 10
+
+    // ── Pile Waypoints accordion (id=3) ───────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Pile Waypoints", desc = "")
+    @ConfigEditorAccordion(id = 3)
+    var pileWaypointsAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 3)
+    @ConfigOption(name = "Enable Pile Waypoints", desc = "Show beacon beams over Kuudra supply piles. Hides occupied piles automatically.")
+    @ConfigEditorBoolean
+    var pileWaypointsEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 3)
+    @ConfigOption(name = "Pile Beam Color", desc = "Color of the pile beacon beams.")
+    @ConfigEditorColour
+    var pileWaypointColor = "0:153:80:255:80"
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 3)
+    @ConfigOption(name = "Pile Beam Opacity", desc = "How see-through the pile beams are. 1 = solid.")
+    @ConfigEditorSlider(minValue = 0.05f, maxValue = 1f, minStep = 0.05f)
+    var pileBeamOpacity = 0.6f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 3)
+    @ConfigOption(name = "Pile Beam Width", desc = "Width of the pile beams. 1 = normal beacon beam.")
+    @ConfigEditorSlider(minValue = 0.2f, maxValue = 3f, minStep = 0.1f)
+    var pileBeamWidth = 1f
+
+    // ── Supply Waypoints accordion (id=4) ─────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Supply Waypoints", desc = "")
+    @ConfigEditorAccordion(id = 4)
+    var supplyWaypointsAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 4)
+    @ConfigOption(name = "Enable Supply Waypoints", desc = "Show beacon beams over Kuudra supply crates being carried by giants.")
+    @ConfigEditorBoolean
+    var supplyWaypointsEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 4)
+    @ConfigOption(name = "Supply Beam Color", desc = "Color of the supply crate beacon beams.")
+    @ConfigEditorColour
+    var supplyWaypointColor = "0:153:255:200:80"
+
+    // ── Direction accordion (id=5) ────────────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Direction", desc = "")
+    @ConfigEditorAccordion(id = 5)
+    var directionAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 5)
+    @ConfigOption(name = "Enable Direction", desc = "Show which way Kuudra peeks during phase 4: RIGHT / FRONT / LEFT / BACK.")
+    @ConfigEditorBoolean
+    var directionEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 5)
+    @ConfigOption(name = "Bold", desc = "Draw the direction text in bold.")
+    @ConfigEditorBoolean
+    var directionBold = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 5)
+    @ConfigOption(name = "Text Scale", desc = "Size of the direction text (also draggable/resizable in the HUD editor).")
+    @ConfigEditorSlider(minValue = 1f, maxValue = 6f, minStep = 0.5f)
+    var directionScaleSlider = 2f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 5)
+    @ConfigOption(name = "Custom Color", desc = "Use one color for every direction instead of red/green/light green/dark red per side.")
+    @ConfigEditorBoolean
+    var directionCustomColor = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 5)
+    @ConfigOption(name = "Direction Color", desc = "Color used when Custom Color is on.")
+    @ConfigEditorColour
+    var directionColor = "0:255:255:255:85"
+
+    // -1 = auto-center
+    @Expose @JvmField var directionHudX = -1
+    @Expose @JvmField var directionHudY = -1
+    @Expose @JvmField var directionScale = "2.0"
+
+    // ── Stun Waypoint accordion (id=6) ────────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Stun Waypoint", desc = "")
+    @ConfigEditorAccordion(id = 6)
+    var stunWaypointAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 6)
+    @ConfigOption(name = "Enable Stun Waypoint", desc = "Show a wireframe box on the chosen stun pod after buying Human Cannonball. Offset-relative until you enter the belly.")
+    @ConfigEditorBoolean
+    var stunWaypointEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 6)
+    @ConfigOption(name = "Pick A Pod", desc = "Which pod to mark for the stun.")
+    @ConfigEditorDropdown(values = ["Close Left", "Close Right", "Far Middle"])
+    var stunPod = 0
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 6)
+    @ConfigOption(name = "Waypoint Color", desc = "Color of the stun pod wireframe box.")
+    @ConfigEditorColour
+    var stunWaypointColor = "0:255:85:255:255"
+
+    // ── Fuel Phase accordion (id=9) — T1/T2 only ──────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Fuel Phase (T1/T2)", desc = "")
+    @ConfigEditorAccordion(id = 9)
+    var fuelPhaseAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 9)
+    @ConfigOption(name = "Ballista Pearl Waypoint", desc = "After Elle's 'Phew! The Ballista is finally ready!' in Basic/Hot Kuudra, show a pearl aim point that lands you at the Ballista in the middle of the piles.")
+    @ConfigEditorBoolean
+    var fuelPearlEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 9)
+    @ConfigOption(name = "Pearl Waypoint Color", desc = "Color of the Ballista pearl aim point.")
+    @ConfigEditorColour
+    var fuelPearlColor = "0:255:255:170:0"
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 9)
+    @ConfigOption(name = "Pearl Waypoint Size", desc = "Size of the Ballista pearl aim point.")
+    @ConfigEditorSlider(minValue = 0.1f, maxValue = 3.0f, minStep = 0.05f)
+    var fuelPearlSize = 0.3f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 9)
+    @ConfigOption(name = "Ballista Pearl Timer", desc = "Countdown on the Ballista aim point while you are picking up a fuel cell, NOW when to throw. Uses the Pearl Waypoints timer settings and NOW sound.")
+    @ConfigEditorBoolean
+    var fuelPearlTimer = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 9)
+    @ConfigOption(name = "Fuel Cell Waypoints", desc = "Beacon beams over every FUEL CELL during the fuel phase.")
+    @ConfigEditorBoolean
+    var fuelCellBeamsEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 9)
+    @ConfigOption(name = "Fuel Cell Beam Color", desc = "Color of the fuel cell beacon beams.")
+    @ConfigEditorColour
+    var fuelCellBeamColor = "0:153:255:85:85"
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 9)
+    @ConfigOption(name = "Fuel Cell Beam Opacity", desc = "How see-through the fuel cell beams are. 1 = solid.")
+    @ConfigEditorSlider(minValue = 0.05f, maxValue = 1f, minStep = 0.05f)
+    var fuelCellBeamOpacity = 0.6f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 9)
+    @ConfigOption(name = "Fuel Cell Beam Width", desc = "Width of the fuel cell beams. 1 = normal beacon beam.")
+    @ConfigEditorSlider(minValue = 0.2f, maxValue = 3f, minStep = 0.1f)
+    var fuelCellBeamWidth = 1f
+
+    // ── Build Overlay accordion (id=10) ───────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Build Overlay", desc = "")
+    @ConfigEditorAccordion(id = 10)
+    var buildOverlayAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 10)
+    @ConfigOption(name = "Enable Build Overlay", desc = "During the build phase, a beacon beam on every supply pile that glides from red (0%) to green (100%) as that pile gets built.")
+    @ConfigEditorBoolean
+    var buildOverlayEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 10)
+    @ConfigOption(name = "Show Progress Text", desc = "Draw a bold 'PROGRESS: 45%' / 'PROGRESS: COMPLETE' label on each pile, the real value the pile shows.")
+    @ConfigEditorBoolean
+    var buildShowPercent = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 10)
+    @ConfigOption(name = "Hide Hypixel Progress Text", desc = "Hide Hypixel's own small PROGRESS nametag on the piles so only the overlay label shows.")
+    @ConfigEditorBoolean
+    var buildHideHypixelText = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 10)
+    @ConfigOption(name = "Text Scale", desc = "Size of the progress label.")
+    @ConfigEditorSlider(minValue = 0.5f, maxValue = 6f, minStep = 0.5f)
+    var buildPercentScale = 2.5f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 10)
+    @ConfigOption(name = "Fade Time", desc = "Seconds the colour takes to glide to a new progress value. Lower = snappier.")
+    @ConfigEditorSlider(minValue = 0.1f, maxValue = 3f, minStep = 0.1f)
+    var buildFadeSeconds = 0.8f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 10)
+    @ConfigOption(name = "Hide Finished", desc = "Remove the beam once a pile reaches 100%.")
+    @ConfigEditorBoolean
+    var buildHideFinished = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 10)
+    @ConfigOption(name = "Hide When All Complete", desc = "Treat the build as done once all 6 piles read COMPLETE (after the delay below), without waiting for Elle's line. Comes back if a pile gets knocked down.")
+    @ConfigEditorBoolean
+    var buildHideWhenComplete = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 10)
+    @ConfigOption(name = "All Complete Delay", desc = "Seconds all 6 piles must stay COMPLETE before the overlay hides.")
+    @ConfigEditorSlider(minValue = 0f, maxValue = 5f, minStep = 0.5f)
+    var buildCompleteDelay = 0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 10)
+    @ConfigOption(name = "Beam Opacity", desc = "How see-through the build beams are. 1 = solid.")
+    @ConfigEditorSlider(minValue = 0.05f, maxValue = 1f, minStep = 0.05f)
+    var buildBeamOpacity = 0.6f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 10)
+    @ConfigOption(name = "Beam Width", desc = "Width of the build beams. 1 = normal beacon beam.")
+    @ConfigEditorSlider(minValue = 0.2f, maxValue = 3f, minStep = 0.1f)
+    var buildBeamWidth = 1f
+
+    // ── Kuudra Highlight accordion (id=8) ─────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Kuudra Highlight", desc = "")
+    @ConfigEditorAccordion(id = 8)
+    var kuudraHighlightAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 8)
+    @ConfigOption(name = "Enable Kuudra Highlight", desc = "Outline Kuudra (the giant magma cube) so you can see him through walls and lava.")
+    @ConfigEditorBoolean
+    var kuudraHighlightEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 8)
+    @ConfigOption(name = "Behind Walls", desc = "Show the outline through walls. Off = only outline Kuudra when you have line of sight.")
+    @ConfigEditorBoolean
+    var kuudraHighlightBehindWalls = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 8)
+    @ConfigOption(name = "Outline Color", desc = "Outline color for Kuudra.")
+    @ConfigEditorColour
+    var kuudraHighlightColor = "0:255:255:85:85"
+
+    // ── Gorilla Tactics Timer accordion (id=50) ───────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Gorilla Tactics Timer", desc = "")
+    @ConfigEditorAccordion(id = 50)
+    var gorillaAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 50)
+    @ConfigOption(name = "Enable", desc = "Show a 3-second countdown when the Tactical Insertion ability is used.")
+    @ConfigEditorBoolean
+    var gorillaTacticsTimer = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 50)
+    @ConfigOption(name = "Display Unit", desc = "Seconds: 3.00s → 0.00s. Ticks: 60t → 0t (1 tick = 0.05s).")
+    @ConfigEditorDropdown(values = ["Seconds", "Ticks"])
+    var gorillaDisplayUnit = 0
+
+    @Expose @JvmField var gorillaHudX = -1
+    @Expose @JvmField var gorillaHudY = -1
+    @Expose @JvmField var gorillaHudScale = "1.5"
+
+    // ── Pearl Timer accordion (id=51) ─────────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Pearl Timer", desc = "")
+    @ConfigEditorAccordion(id = 51)
+    var pearlAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 51)
+    @ConfigOption(name = "Enable", desc = "Show a countdown for each thrown ender pearl until it lands. Supports multiple pearls in flight.")
+    @ConfigEditorBoolean
+    var pearlTimer = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 51)
+    @ConfigOption(name = "Display Unit", desc = "Seconds: 1.20s → 0.00s. Ticks: 24t → 0t (1 tick = 0.05s).")
+    @ConfigEditorDropdown(values = ["Seconds", "Ticks"])
+    var pearlDisplayUnit = 0
+
+    @Expose @JvmField var pearlTimerHudX = -1
+    @Expose @JvmField var pearlTimerHudY = -1
+    @Expose @JvmField var pearlTimerHudScale = "1.0"
+
+    // ── Crate Hitbox accordion (id=10) ────────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Crate Hitbox", desc = "")
+    @ConfigEditorAccordion(id = 12)
+    var crateHitboxAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 12)
+    @ConfigOption(name = "Enable Crate Hitbox", desc = "Highlight Kuudra supply crates and the drag radius.")
+    @ConfigEditorBoolean
+    var crateWaypointsEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 12)
+    @ConfigOption(name = "Show Crate Hitbox", desc = "Draw a wireframe outline around the crate's interaction zombie.")
+    @ConfigEditorBoolean
+    var showCrateHitbox = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 12)
+    @ConfigOption(name = "Crate Hitbox Color", desc = "Wireframe color for the crate hitbox.")
+    @ConfigEditorColour
+    var crateHitboxColor = "0:255:255:255:0"
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 12)
+    @ConfigOption(name = "Crate Reach Color Change", desc = "Switch crate hitbox color when you're within reach distance.")
+    @ConfigEditorBoolean
+    var crateHitboxReachColorChange = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 12)
+    @ConfigOption(name = "Crate In-Reach Color", desc = "Color when crate is in reach.")
+    @ConfigEditorColour
+    var crateHitboxInReachColor = "0:255:0:255:0"
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 12)
+    @ConfigOption(name = "Show Drag Hitbox", desc = "Draw a circle on the ground showing the drag radius.")
+    @ConfigEditorBoolean
+    var showDragHitbox = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 12)
+    @ConfigOption(name = "Drag Hitbox Color", desc = "Color for the drag radius circle.")
+    @ConfigEditorColour
+    var dragHitboxColor = "0:255:255:150:0"
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 12)
+    @ConfigOption(name = "Drag In-Range Color Change", desc = "Switch drag color when your fishing bobber is in range.")
+    @ConfigEditorBoolean
+    var dragHitboxInRangeColorChange = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 12)
+    @ConfigOption(name = "Drag In-Range Color", desc = "Color when fishing bobber is in drag range.")
+    @ConfigEditorColour
+    var dragHitboxInRangeColor = "0:255:0:255:0"
+
+    // ── Pearl Waypoints accordion (id=11) ─────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Pearl Waypoints", desc = "")
+    @ConfigEditorAccordion(id = 11)
+    var pearlWaypointsAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Enable Pearl Waypoints", desc = "Show dynamic pearl-throw aim points for supplies during Kuudra.")
+    @ConfigEditorBoolean
+    var pearlWaypointsEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Talisman Tier", desc = "Pearl Talisman tier — affects how long you can carry a chest before it slips.")
+    @ConfigEditorDropdown(values = ["No Tali", "T1", "T2", "T3"])
+    var pearlTalismanTier = 3
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Waypoint Shape", desc = "Shape of the main aim-point waypoint.")
+    @ConfigEditorDropdown(values = ["ESP Box", "Box Outline", "Flat Square", "Flat Circle", "Dot"])
+    var pearlShape = 1
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Dot Radius", desc = "Dot shape only: radius of the solid dot at the exact aim point.")
+    @ConfigEditorSlider(minValue = 0.02f, maxValue = 0.5f, minStep = 0.01f)
+    var pearlTargetDotRadius = 0.08f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Waypoint Color", desc = "Color of the main aim-point waypoint.")
+    @ConfigEditorColour
+    var pearlColor = "0:255:80:200:255"
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Waypoint Size", desc = "Size of the main aim-point waypoint.")
+    @ConfigEditorSlider(minValue = 0.1f, maxValue = 3.0f, minStep = 0.05f)
+    var pearlSize = 0.1f
+
+    // ── Timer ────────────────────────────────
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Show Timer", desc = "Show pearl flight time near the waypoint.")
+    @ConfigEditorBoolean
+    var pearlWaypointTimer = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Timer Delay", desc = "Extra delay (ms) added to the displayed timer to compensate for input lag.")
+    @ConfigEditorSlider(minValue = 0f, maxValue = 500f, minStep = 10f)
+    var pearlTimerDelay = 0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Reaction Time", desc = "Fire NOW this many ms early to cover the time between seeing NOW and the throw leaving your hand. 200 = typical.")
+    @ConfigEditorSlider(minValue = 0f, maxValue = 500f, minStep = 10f)
+    var pearlReactionMs = 200f
+
+    /** Measured grab length per "tier/talisman", in server-tick units. Learned automatically, no GUI. */
+    @Expose @JvmField
+    var pearlLearnedGrabTicks: MutableMap<String, Int> = mutableMapOf()
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Timer Scale", desc = "Component scale of the flight-time label.")
+    @ConfigEditorSlider(minValue = 0.5f, maxValue = 4.0f, minStep = 0.1f)
+    var pearlTimerScale = 3.0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Timer Position", desc = "Position of the timer relative to the waypoint.")
+    @ConfigEditorDropdown(values = ["Above", "Below", "Center"])
+    var pearlTimerPos = 0
+
+    // ── NOW sound ─────────────────────────────
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Now Sound", desc = "Play a ping the moment the throw window opens during a chest grab.")
+    @ConfigEditorBoolean
+    var pearlNowSound = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Now Sound Volume", desc = "Volume of the throw-window ping. 0 = silent.")
+    @ConfigEditorSlider(minValue = 0f, maxValue = 2.0f, minStep = 0.1f)
+    var pearlNowSoundVolume = 1.0f
+
+    // ── Double Pearls ────────────────────────────────
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Double Pearls", desc = "Render a secondary aim point for chained pearls (when one is mid-air).")
+    @ConfigEditorBoolean
+    var pearlDPearls = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Hide on Missing", desc = "Hide a double-pearl waypoint when its supply has been called as missing.")
+    @ConfigEditorBoolean
+    var pearlHideOnMissing = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Double Pearl Size", desc = "Size of the double-pearl aim point.")
+    @ConfigEditorSlider(minValue = 0.1f, maxValue = 3.0f, minStep = 0.05f)
+    var pearlDPearlSize = 0.1f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Double Pearl Timer", desc = "Show flight time for double-pearl waypoints.")
+    @ConfigEditorBoolean
+    var pearlDPearlTimer = true
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Double Pearl Land Delay", desc = "Subtract this many ms from the displayed time so it shows time-until-pearl-can-be-thrown.")
+    @ConfigEditorSlider(minValue = 0f, maxValue = 1000f, minStep = 10f)
+    var pearlDPearlLandDelay = 0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Double Pearl Timer Size", desc = "Component scale for the double-pearl timer.")
+    @ConfigEditorSlider(minValue = 0.5f, maxValue = 4.0f, minStep = 0.1f)
+    var pearlDPearlTimerSize = 0.8f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Double Pearl Color", desc = "Color of the double-pearl aim point.")
+    @ConfigEditorColour
+    var pearlDPearlColor = "0:255:255:200:80"
+
+    // ── Sky markers ────────────────────────────────
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Sky Markers", desc = "Render high-arc sky waypoints for distant supplies.")
+    @ConfigEditorBoolean
+    var pearlSkyPearls = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Sky Marker Size", desc = "Size of the sky marker.")
+    @ConfigEditorSlider(minValue = 0.1f, maxValue = 5.0f, minStep = 0.1f)
+    var pearlSkySize = 1.0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Sky Marker Color", desc = "Color of sky markers.")
+    @ConfigEditorColour
+    var pearlSkyColor = "0:200:255:80:255"
+
+    // ── Per-spot Y offsets ────────────────────────────────
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Per-Spot Y Offsets", desc = "Enable per-spot vertical offsets to fine-tune aim height.")
+    @ConfigEditorBoolean
+    var pearlOffsetsEnabled = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Shop Offset", desc = "Y offset for Shop waypoint.")
+    @ConfigEditorSlider(minValue = -2f, maxValue = 2f, minStep = 0.05f)
+    var pearlShopOff = 0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "X Offset", desc = "Y offset for X waypoint.")
+    @ConfigEditorSlider(minValue = -2f, maxValue = 2f, minStep = 0.05f)
+    var pearlXOff = 0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "X-Cannon Offset", desc = "Y offset for X-Cannon waypoint.")
+    @ConfigEditorSlider(minValue = -2f, maxValue = 2f, minStep = 0.05f)
+    var pearlXCannonOff = 0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Equals Offset", desc = "Y offset for Equals waypoint.")
+    @ConfigEditorSlider(minValue = -2f, maxValue = 2f, minStep = 0.05f)
+    var pearlEqualsOff = 0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Slash Offset", desc = "Y offset for Slash waypoint.")
+    @ConfigEditorSlider(minValue = -2f, maxValue = 2f, minStep = 0.05f)
+    var pearlSlashOff = 0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Triangle Offset", desc = "Y offset for Triangle waypoint.")
+    @ConfigEditorSlider(minValue = -2f, maxValue = 2f, minStep = 0.05f)
+    var pearlTriangleOff = 0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Square Offset", desc = "Y offset for Square waypoint.")
+    @ConfigEditorSlider(minValue = -2f, maxValue = 2f, minStep = 0.05f)
+    var pearlSquareOff = 0f
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Use New Priority", desc = "Use the alternate routing where Shop and Triangle swap targets.")
+    @ConfigEditorBoolean
+    var pearlNewPrio = false
+
+    // ── Rend Damage accordion (id=13) ─────────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Rend Damage (untested)", desc = "")
+    @ConfigEditorAccordion(id = 13)
+    var rendAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 13)
+    @ConfigOption(name = "Enable", desc = "In the DPS phase, announce each Rend pull: when it landed after Kuudra surfaced and how much it did (20M+ drops). Ported from the chearys module and not yet tested here.")
+    @ConfigEditorBoolean
+    var rendDamage = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 13)
+    @ConfigOption(name = "Summary on Kuudra Down", desc = "One line at KUUDRA DOWN: how many pulls, total, the biggest, and when the first landed.")
+    @ConfigEditorBoolean
+    var rendSummary = true
+
+    // ── Perk Menu accordion (id=14) ───────────────────────────
+    @Expose @JvmField
+    @ConfigOption(name = "Perk Menu", desc = "")
+    @ConfigEditorAccordion(id = 14)
+    var perkMenuAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 14)
+    @ConfigOption(name = "Remove Perks", desc = "Hide the perks nobody takes from the Perk Menu, so only the ones that matter are left.")
+    @ConfigEditorBoolean
+    var removePerks = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 14)
+    @ConfigOption(name = "Show Stun Perks", desc = "Keep Human Cannonball visible when Remove Perks is on, for the stun role.")
+    @ConfigEditorBoolean
+    var removePerksShowStun = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 14)
+    @ConfigOption(name = "Middle Click GUI", desc = "In the Perk Menu, a left click on an item is sent as a middle click, which Hypixel registers instantly and which never picks the item up or ghosts it. ")
+    @ConfigEditorBoolean
+    var middleClickGui = false
+}

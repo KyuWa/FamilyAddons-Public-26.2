@@ -1,0 +1,42 @@
+{
+  "required": true,
+  "package": "org.kyowa.familyaddons.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "EntityRefMixin"
+  ],
+  "client": [
+    "SignEditMixin",
+    "EntityOutlineMixin",
+    "BuildPileNametagMixin",
+    "NameStyleTabMixin",
+    "NameStyleTabOverlayMixin",
+    "NameStyleNametagMixin",
+    "NameStyleFontMixin",
+    "SbaTabListCompatMixin",
+    "SkyHanniTabLineCompatMixin",
+    "ChatScreenClickMixin",
+    "ScreenClickInvoker",
+    "DisconnectGuardMixin",
+    "EntityCaptureMixin",
+    "PlayerDisguiseMixin",
+    "HotbarScrollMixin",
+    "ServerTickPacketMixin",
+    "PlayerPositionPacketMixin",
+    "ParticlePacketMixin",
+    "DungeonEntityPacketMixin",
+    "DungeonOutlineRangeMixin",
+    "MobEffectPacketMixin",
+    "CameraMixin",
+    "FreelookEntityMixin",
+    "PearlTitlePacketMixin",
+    "storage.MinecraftScreenMixin",
+    "storage.ScreenRenderMixin",
+    "storage.ContainerScreenInputMixin",
+    "storage.KeyboardHandlerMixin",
+    "KuudraPerkMenuMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
