@@ -74,6 +74,7 @@ class PanelsScreen(private val parent: Screen?, initialSearch: String) : Screen(
         "Disguise & Names" to listOf("playerDisguise", "nameChanger"),
         "Family Storage" to listOf("storage"),
         "Contact" to listOf("contact"),
+
     )
 
     private fun modulesOf(cat: CategorySpec, grouped: Boolean): List<Module> {
@@ -231,7 +232,8 @@ class PanelsScreen(private val parent: Screen?, initialSearch: String) : Screen(
         val overHead = mx >= x && mx < x + PW && my >= y && my < y + HEADER_H
         g.rrect(x, y, x + PW, y + HEADER_H + 4, 5, Theme.CARD)
         g.fill(x, y + HEADER_H, x + PW, y + HEADER_H + 1, Theme.ACCENT_MID)
-        g.text(p.name, x + (PW - g.width(p.name)) / 2, y + 5, if (overHead) Theme.TEXT else Theme.TEXT_DIM)
+        if (p.key == "Contact") g.bandText(p.name, x + (PW - g.width(p.name)) / 2, y + 5, shadow = false)
+        else g.text(p.name, x + (PW - g.width(p.name)) / 2, y + 5, if (overHead) Theme.TEXT else Theme.TEXT_DIM)
         val overArrow = overHead && mx >= x + PW - 14
         g.text(if (p.collapsed) "▸" else "▾", x + PW - 11, y + 5, if (overArrow) Theme.ACCENT else Theme.TEXT_FAINT)
         // while searching, a collapsed panel opens to show its hits (its saved state is untouched)

@@ -281,7 +281,10 @@ class FaConfigScreen(private val parent: Screen?, initialSearch: String) : Scree
                 val a = anim("side:" + cat.key, over || sel, dt)
                 if (a > 0.01f) g.rrect(rx, y, rx + rw, y + sideRowH - 2, 3, Theme.lerp(Theme.SIDEBAR, if (sel) Theme.CARD_HOVER else Theme.CARD, a.toDouble()))
                 if (sel) g.rrect(rx, y + 3, rx + 2, y + sideRowH - 5, 1, Theme.ACCENT)
-                g.text(g.clip(cat.name, rw - 12), rx + 7, y + 5, if (sel || over) Theme.TEXT else Theme.TEXT_DIM)
+                // Contact wears the mod's own band, so it reads as a way to reach
+                // someone rather than another page of settings.
+                if (cat.key == "contact") g.bandText(g.clip(cat.name, rw - 12), rx + 7, y + 5, shadow = false)
+                else g.text(g.clip(cat.name, rw - 12), rx + 7, y + 5, if (sel || over) Theme.TEXT else Theme.TEXT_DIM)
                 y += sideRowH
             }
         }

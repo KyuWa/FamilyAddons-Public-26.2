@@ -65,10 +65,6 @@ class FamilyConfig : Config() {
     var safari = SafariConfig()
 
     @Expose @JvmField
-    @Category(name = "Contact", desc = "Report a bug or suggest something, straight to the mod's Discord")
-    var contact = ContactConfig()
-
-    @Expose @JvmField
     @Category(name = "Keybinds", desc = "GFS keybinds for quick item restocking")
     var keybinds = KeybindsConfig()
 
@@ -85,5 +81,9 @@ class FamilyConfig : Config() {
     @Expose @JvmField
     @Category(name = "Family Storage", desc = "Ender chest pages and backpacks side by side, with search")
     var storage = StorageConfig()
+
+    @Expose @JvmField
+    @Category(name = "Contact", desc = "Report a bug or suggest something, straight to the mod's Discord")
+    var contact = ContactConfig()
 
 }
