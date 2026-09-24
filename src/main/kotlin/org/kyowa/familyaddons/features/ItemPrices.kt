@@ -2,6 +2,7 @@ package org.kyowa.familyaddons.features
 
 import com.google.gson.JsonParser
 import net.minecraft.core.component.DataComponents
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.ItemStack
 import org.kyowa.familyaddons.FamilyAddons
 import java.net.URI
@@ -42,9 +43,16 @@ object ItemPrices {
     private const val MAX_IN_FLIGHT = 6
 
     private const val AUCTION_API = "https://sky.coflnet.com/api/item/price/%s/current"
+    private const val PET_API = "https://sky.coflnet.com/api/auctions/tag/%s/active/bin"
     private const val BAZAAR_API = "https://api.hypixel.net/v2/skyblock/bazaar"
 
     data class BazaarData(val instaBuy: Double, val instaSell: Double)
+
+    /** One live BIN listing of a pet, which is how rarity and level get priced. */
+    data class PetListing(val tier: String, val level: Int, val price: Double)
+
+    private val petListings = mutableMapOf<String, List<PetListing>>()
+    private val petLevelRegex = Regex("""\[Lvl (\d+)]""")
 
     /** Refresh the bazaar list if it is stale. Cheap to call every frame. */
     fun ensureFresh() {
@@ -75,6 +83,80 @@ object ItemPrices {
 
     /** The SkyBlock item id for a stack: `PET:type:rarity`, `ENCHBOOK:name:level` or a plain id. */
     fun idOf(stack: ItemStack): String? = getSkyblockId(stack)
+
+    /**
+     * The `ExtraAttributes` of a stack — enchantments, hot potato books, stars,
+     * gems and the rest of what makes one sword worth more than another. Hypixel
+     * sometimes sends these flattened into the root tag, so that is the fallback.
+     */
+    fun extraAttributesOf(stack: ItemStack): CompoundTag? {
+        val custom = stack.get(DataComponents.CUSTOM_DATA) ?: return null
+        val nbt = custom.copyTag()
+        val direct = nbt.getCompoundOrEmpty("ExtraAttributes")
+        if (!direct.isEmpty) return direct
+        val nested = nbt.getCompoundOrEmpty("tag").getCompoundOrEmpty("ExtraAttributes")
+        if (!nested.isEmpty) return nested
+        return if (nbt.isEmpty) null else nbt
+    }
+
+    /** The item a pet is holding, e.g. `MINOS_RELIC`, or null. */
+    fun petHeldItem(stack: ItemStack): String? {
+        val custom = stack.get(DataComponents.CUSTOM_DATA) ?: return null
+        val nbt = custom.copyTag()
+        val raw = nbt.getString("petInfo").orElse(null)?.ifBlank { null }
+            ?: nbt.getCompoundOrEmpty("ExtraAttributes").getString("petInfo").orElse(null)?.ifBlank { null }
+            ?: return null
+        return try {
+            JsonParser.parseString(raw).asJsonObject.get("heldItem")?.asString?.ifBlank { null }
+        } catch (e: Exception) { null }
+    }
+
+    /**
+     * Live BIN listings for a kind of pet. A pet's worth depends on its rarity
+     * and level, which the single current price cannot express, so this reads
+     * the cheapest listings and lets the caller pick the matching one.
+     */
+    fun petListingsOf(tag: String): List<PetListing>? {
+        requestPetsIfStale(tag)
+        return synchronized(petListings) { petListings[tag] }
+    }
+
+    private fun requestPetsIfStale(tag: String) {
+        val key = "PETS:$tag"
+        val now = System.currentTimeMillis()
+        val asked = synchronized(askedAt) { askedAt[key] }
+        if (asked != null && now - asked < AUCTION_CACHE_MS) return
+        if (!inFlight.add(key)) return
+        if (running.get() >= MAX_IN_FLIGHT) { inFlight.remove(key); return }
+
+        synchronized(askedAt) { askedAt[key] = now }
+        running.incrementAndGet()
+        CompletableFuture.runAsync {
+            try {
+                val res = http.send(
+                    HttpRequest.newBuilder().uri(URI.create(String.format(PET_API, tag)))
+                        .header("User-Agent", "FamilyAddons/1.0").GET().build(),
+                    HttpResponse.BodyHandlers.ofString()
+                )
+                val listings = ArrayList<PetListing>()
+                for (entry in JsonParser.parseString(res.body()).asJsonArray) {
+                    val o = entry.asJsonObject
+                    val tier = o.get("tier")?.asString ?: continue
+                    val price = o.get("startingBid")?.asDouble ?: continue
+                    val name = o.get("itemName")?.asString ?: ""
+                    val level = petLevelRegex.find(name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
+                    if (price > 0) listings.add(PetListing(tier, level, price))
+                }
+                synchronized(petListings) { petListings[tag] = listings }
+            } catch (e: Exception) {
+                FamilyAddons.LOGGER.warn("ItemPrices: pets $tag failed: ${e.message}")
+                synchronized(askedAt) { askedAt.remove(key) }
+            } finally {
+                running.decrementAndGet()
+                inFlight.remove(key)
+            }
+        }
+    }
 
     private fun requestIfStale(tag: String) {
         if (tag.isBlank()) return
