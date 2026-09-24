@@ -386,9 +386,13 @@ public final class StorageOverlay {
                     String shown = v.text() != null ? "&a" + v.text()
                             : (ItemValue.INSTANCE.pricesReady() ? null : "&8...");
                     if (shown != null) {
-                        double vx = rX + Utils.getStringWidth(pageLabel) + 5;
+                        // Sit on the page's right edge rather than after the name:
+                        // the name is bold and its measured width reads short, which
+                        // had the figure printing over it.
+                        double vw = Utils.getStringWidth(shown);
+                        double vx = Math.max(rX + Utils.getStringWidth(pageLabel) + 6, rX + 161 - vw);
                         Utils.drawString(ctx, shown, vx, rY - 12, true);
-                        if (v.lines() != null && mx >= vx && mx <= vx + Utils.getStringWidth(shown)
+                        if (v.lines() != null && mx >= vx && mx <= vx + vw
                                 && my >= rY - 13 && my <= rY - 1) {
                             tooltips.add(new Tooltip(v.lines(), mx, my, "value:" + page.name));
                         }
