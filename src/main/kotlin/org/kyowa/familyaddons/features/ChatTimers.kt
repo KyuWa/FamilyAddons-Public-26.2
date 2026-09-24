@@ -105,8 +105,9 @@ object ChatTimers {
         val matrices = ctx.pose()
 
         running.sortedBy { it.endsAtMs }.forEachIndexed { i, timer ->
-            val left = ((timer.endsAtMs - now) / 1000.0).toInt().coerceAtLeast(0)
-            val time = "%d:%02d".format(left / 60, left % 60)
+            // Seconds and hundredths, counting down live: 12.34, 1.07, 0.00.
+            val left = (timer.endsAtMs - now).coerceAtLeast(0L)
+            val time = "%.2f".format(left / 1000.0)
             matrices.pushMatrix()
             matrices.translate(hudX.toFloat(), hudY + i * lineHeight)
             matrices.scale(scale, scale)

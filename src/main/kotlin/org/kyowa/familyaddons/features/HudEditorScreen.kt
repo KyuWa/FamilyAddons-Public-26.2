@@ -131,7 +131,7 @@ class HudEditorScreen : Screen(Component.literal("FA HUD Editor")) {
 
 
         // Chat Timers
-        val ctPreview = "§eTime: §f0:40"
+        val ctPreview = "§eTime: §f12.34"
         val ctScale = FamilyConfigManager.config.utilities.chatTimerHudScale.toFloatOrNull() ?: 1f
         val ctW = tr.width(ctPreview.replace(COLOR_CODE_REGEX, ""))
         elements.add(HudElement(
