@@ -74,7 +74,13 @@ class ListEditorScreen(
             listOf(Column("item", "Item id", Kind.TEXT, 44, "ender_pearl"), Column("amount", "Amount", Kind.NUMBER, 16, "16"), Column("key", "Key", Kind.KEY, 24)),
             "No custom items yet. Add one below: the item's id, how many to keep, and the key that tops it up.",
             "Ids as in /gfs: ender_pearl, superboom_tnt, toxic_arrow_poison…", itemColumn = "item")
+
+        fun chatTimers(parent: Screen?) = ListEditorScreen(parent, "chat timers", "utilities.chatTimerList",
+            listOf(Column("match", "When chat says", Kind.TEXT, 60, "Arachne Crystal"), Column("seconds", "Seconds", Kind.NUMBER, 24, "40")),
+            "No timers yet. Add one below: a bit of the chat line to watch for, and how long to count down.",
+            "Capitals do not matter, and a line only has to contain the text. 1 to 300 seconds.")
     }
+
 
     private val rows get() = load(storageKey)
     private fun save() = save(storageKey)

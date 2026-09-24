@@ -154,7 +154,7 @@ class PanelsScreen(private val parent: Screen?, initialSearch: String) : Screen(
 
     /** Height of one option row inside an open module. */
     private fun optionH(o: OptionSpec, w: Widget?): Int = when (o.type) {
-        "boolean", "colour", "button", "shortcuts", "gfslist" -> ROW_H
+        "boolean", "colour", "button", "shortcuts", "gfslist", "timerlist" -> ROW_H
         else -> 11 + (w?.h ?: 14) + 4      // name line, then the control full-width
     }
 
@@ -303,7 +303,7 @@ class PanelsScreen(private val parent: Screen?, initialSearch: String) : Screen(
                     for (o in visibleOptions(m)) {
                         val w = widget(o)
                         val h = optionH(o, w)
-                        val inline = o.type == "boolean" || o.type == "colour" || o.type == "button" || o.type == "shortcuts" || o.type == "gfslist"
+                        val inline = o.type == "boolean" || o.type == "colour" || o.type == "button" || o.type == "shortcuts" || o.type == "gfslist" || o.type == "timerlist" || o.type == "timerlist"
                         val optOver = inBody && lmy >= oy && lmy < oy + h
                         if (w != null) { w.ox = x; w.oy = by; w.scale = FS }
                         if (inline) {

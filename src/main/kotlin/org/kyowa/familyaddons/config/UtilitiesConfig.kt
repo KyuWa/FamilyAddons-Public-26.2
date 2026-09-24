@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.ConfigAccordionId
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorAccordion
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
@@ -76,6 +77,31 @@ class UtilitiesConfig {
 
 
 
+
+    @Expose @JvmField
+    @ConfigOption(name = "Chat Timers", desc = "")
+    @ConfigEditorAccordion(id = 81)
+    var chatTimersAccordion = false
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 81)
+    @ConfigOption(name = "Enable", desc = "Start a countdown on screen whenever a line of chat contains text you chose. Move the timers with /fa gui.")
+    @ConfigEditorBoolean
+    var chatTimers = false
+
+    @JvmField
+    @ConfigAccordionId(id = 81)
+    @ConfigOption(name = "Timers", desc = "Your timers: a bit of the chat line to watch for, and how many seconds to count down (1-300).")
+    @ConfigEditorButton(buttonText = "Edit")
+    var chatTimerEdit: Runnable = Runnable { }
+
+    /** JSON list of {match, seconds}, edited from the Timers option. Not shown in the GUI. */
+    @Expose @JvmField
+    var chatTimerList = "[]"
+
+    @Expose @JvmField var chatTimerHudX = -1
+    @Expose @JvmField var chatTimerHudY = -1
+    @Expose @JvmField var chatTimerHudScale = "1.0"
 
     /** JSON list of {alias, command, key}, edited from the Command Shortcuts option. Not shown in the GUI. */
     @Expose @JvmField

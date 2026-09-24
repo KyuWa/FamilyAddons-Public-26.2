@@ -129,6 +129,28 @@ class HudEditorScreen : Screen(Component.literal("FA HUD Editor")) {
             }
         ))
 
+
+        // Chat Timers
+        val ctPreview = "§eArachne Crystal §f0:40"
+        val ctScale = FamilyConfigManager.config.utilities.chatTimerHudScale.toFloatOrNull() ?: 1f
+        val ctW = tr.width(ctPreview.replace(COLOR_CODE_REGEX, ""))
+        elements.add(HudElement(
+            id = "chatTimers", label = "Chat Timers",
+            x = FamilyConfigManager.config.utilities.chatTimerHudX.takeIf { it >= 0 } ?: 10,
+            y = FamilyConfigManager.config.utilities.chatTimerHudY.takeIf { it >= 0 } ?: 60,
+            w = ctW + 4, h = 10,
+            scale = ctScale,
+            canScale = true,
+            onSave = { elem ->
+                FamilyConfigManager.config.utilities.chatTimerHudX = elem.x
+                FamilyConfigManager.config.utilities.chatTimerHudY = elem.y
+                FamilyConfigManager.config.utilities.chatTimerHudScale = "%.1f".format(elem.scale)
+            },
+            renderContent = { ctx, _ ->
+                ctx.text(tr, Component.literal(ctPreview), 0, 0, 0xFFFFFFFF.toInt(), true)
+            }
+        ))
+
     }
 
     override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {

@@ -372,6 +372,24 @@ class GfsListOpt(opt: OptionSpec) : Widget(opt) {
     }
 }
 
+/** "Edit (n)" for the chat timer list. */
+class TimerListOpt(opt: OptionSpec) : Widget(opt) {
+    override val w = 60
+    override val h = 14
+    override fun render(g: Gfx, mx: Int, my: Int) {
+        val over = hovered(mx, my)
+        g.rrect(x, y, x + w, y + h, 3, if (over) Theme.ACCENT_MID else Theme.ACCENT_DARK)
+        val label = "Edit (${ListEditorScreen.count("utilities.chatTimerList")})"
+        g.text(label, x + (w - g.width(label)) / 2, y + 3, Theme.TEXT, true)
+    }
+    override fun click(mx: Double, my: Double, button: Int): Boolean {
+        if (!contains(mx, my)) return false
+        val mc = Minecraft.getInstance()
+        mc.gui.setScreen(ListEditorScreen.chatTimers(mc.gui.screen()))
+        return true
+    }
+}
+
 // ── Mob picker: the id box, the mob's egg, and a button to the picker ───────
 
 class MobPickerOpt(opt: OptionSpec) : Widget(opt) {
@@ -415,6 +433,7 @@ class MobPickerOpt(opt: OptionSpec) : Widget(opt) {
 fun widgetFor(opt: OptionSpec): Widget? = when (opt.type) {
     "shortcuts" -> ShortcutsOpt(opt)
     "gfslist" -> GfsListOpt(opt)
+    "timerlist" -> TimerListOpt(opt)
     "mobpicker" -> MobPickerOpt(opt)
     "boolean" -> Toggle(opt)
     "slider" -> Slider(opt)

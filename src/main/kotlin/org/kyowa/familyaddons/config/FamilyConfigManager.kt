@@ -217,7 +217,20 @@ object FamilyConfigManager {
     fun save() {
         try {
             configFile.parentFile.mkdirs()
-            FileWriter(configFile).use { fw -> fw.write(gson.toJson(_config)) }
+            val tree = gson.toJsonTree(_config).asJsonObject
+            // Keep what we do not recognise. A build without a category still has
+            // that category's block sitting in the file — the public build has no
+            // Dev section — and writing our own tree over the top would delete it,
+            // losing settings the other build still needs.
+            if (configFile.exists()) {
+                try {
+                    val onDisk = FileReader(configFile).use { fr -> JsonParser.parseReader(fr) } as? JsonObject
+                    onDisk?.entrySet()?.forEach { (name, value) -> if (!tree.has(name)) tree.add(name, value) }
+                } catch (e: Exception) {
+                    // Unreadable: our own tree is the best we can do.
+                }
+            }
+            FileWriter(configFile).use { fw -> fw.write(gson.toJson(tree)) }
         } catch (e: Exception) {
             e.printStackTrace()
         }
