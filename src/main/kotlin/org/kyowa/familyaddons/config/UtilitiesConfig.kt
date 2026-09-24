@@ -80,17 +80,17 @@ class UtilitiesConfig {
 
     @Expose @JvmField
     @ConfigOption(name = "Chat Timers", desc = "")
-    @ConfigEditorAccordion(id = 81)
+    @ConfigEditorAccordion(id = 82)
     var chatTimersAccordion = false
 
     @Expose @JvmField
-    @ConfigAccordionId(id = 81)
+    @ConfigAccordionId(id = 82)
     @ConfigOption(name = "Enable", desc = "Start a countdown on screen whenever a line of chat contains text you chose. Move the timers with /fa gui.")
     @ConfigEditorBoolean
     var chatTimers = false
 
     @JvmField
-    @ConfigAccordionId(id = 81)
+    @ConfigAccordionId(id = 82)
     @ConfigOption(name = "Timers", desc = "Your timers: a bit of the chat line to watch for, and how many seconds to count down (1-300).")
     @ConfigEditorButton(buttonText = "Edit")
     var chatTimerEdit: Runnable = Runnable { }
