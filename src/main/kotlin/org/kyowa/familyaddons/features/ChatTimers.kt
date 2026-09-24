@@ -73,7 +73,7 @@ object ChatTimers {
             val done = running.filter { it.endsAtMs <= now }
             if (done.isEmpty()) return@register
             running.removeAll(done)
-            for (timer in done) FaChat.send("§e${timer.label} §7— time's up")
+            for (timer in done) FaChat.send("§eTime's up §7— ${timer.label}")
         }
 
         HudElementRegistry.addLast(
@@ -110,7 +110,7 @@ object ChatTimers {
             matrices.pushMatrix()
             matrices.translate(hudX.toFloat(), hudY + i * lineHeight)
             matrices.scale(scale, scale)
-            ctx.text(tr, Component.literal("§e${timer.label} §f$time"), 0, 0, -1, true)
+            ctx.text(tr, Component.literal("§eTime: §f$time"), 0, 0, -1, true)
             matrices.popMatrix()
         }
     }
