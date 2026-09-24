@@ -192,23 +192,61 @@ public final class StorageOverlay {
     // scrollbar thumb
     private static final int KNOB_ON_TOP = Utils.color(200, 110, 255);
 
-    // ── what the open container is worth ──────────────────────────────
-    // Pricing a page means reading every item's NBT, so the answer is kept for
-    // a moment rather than worked out again on every frame.
+    // ── what a container is worth ─────────────────────────────────────
+    // Pricing a page means reading every item's NBT, so an answer is kept for a
+    // moment instead of being worked out again on every frame. Keyed by page so
+    // the panel (the open one) and the figures (whichever you point at) share it.
     private static final long VALUE_REFRESH_MS = 250;
-    private static String valueText = null;
-    private static List<Component> valueLines = null;
-    private static String valueFor = null;
-    private static long valueAtMs = 0;
+    private static final double VALUE_PANEL_W = 150;
+    private static final Map<String, Valued> valueCache = new HashMap<>();
 
-    private static void refreshValue(String pageName, List<ItemStack> items) {
+    private record Valued(String text, List<Component> lines, long at) {}
+
+    private static Valued valueOf(String pageName, List<ItemStack> items) {
         long now = System.currentTimeMillis();
-        if (pageName.equals(valueFor) && now - valueAtMs < VALUE_REFRESH_MS) return;
-        valueFor = pageName;
-        valueAtMs = now;
+        Valued cached = valueCache.get(pageName);
+        if (cached != null && now - cached.at() < VALUE_REFRESH_MS) return cached;
         double worth = ItemValue.INSTANCE.totalOf(items);
-        valueText = worth > 0 ? ItemValue.INSTANCE.formatShort(worth) : null;
-        valueLines = worth > 0 ? ItemValue.INSTANCE.breakdown(items, pageName) : null;
+        Valued fresh = new Valued(
+                worth > 0 ? ItemValue.INSTANCE.formatShort(worth) : null,
+                worth > 0 ? ItemValue.INSTANCE.breakdown(items, pageName) : null,
+                now);
+        valueCache.put(pageName, fresh);
+        return fresh;
+    }
+
+    /**
+     * The open container's worth as a panel beside the pages. It sits outside
+     * the grid on the side you picked, and is nudged back on screen when there
+     * is no room for it there.
+     */
+    private static void drawValuePanel(GuiGraphicsExtractor ctx, List<Component> lines,
+                                       double x, double w, double y, double pagesBottom, double screenWidth) {
+        // Outside the grid on the side you picked; on the other side when that
+        // one has no room, and not at all when neither has — the figure beside
+        // the page name still tells you the total, so nothing is lost.
+        boolean left = Cfg.valuePanelSide() == 1;
+        double gridLeft = x - w + 3;
+        double gridRight = x + 2 * w + 16;
+        double px = left ? gridLeft - VALUE_PANEL_W - 6 : gridRight + 6;
+        if (px < 2 || px + VALUE_PANEL_W > screenWidth - 2) {
+            px = left ? gridRight + 6 : gridLeft - VALUE_PANEL_W - 6;
+        }
+        if (px < 2 || px + VALUE_PANEL_W > screenWidth - 2) return;
+        double ph = Math.min(pagesBottom - y + 3, 10 + lines.size() * 10);
+
+        Utils.drawNineSlice(ctx, DEMO_BACKGROUND, px, y - 3, VALUE_PANEL_W, ph,
+                DEMO_PANEL_W, DEMO_PANEL_H, DEMO_BORDER, 256, 256, Utils.alphaTint(Cfg.alpha()));
+
+        var font = Minecraft.getInstance().font;
+        ctx.enableScissor((int) px, (int) (y - 3), (int) Math.ceil(px + VALUE_PANEL_W), (int) Math.ceil(y - 3 + ph));
+        double ly = y + 2;
+        for (Component line : lines) {
+            if (ly + 9 > y - 3 + ph) break;
+            ctx.text(font, line, (int) (px + 5), (int) ly, Utils.WHITE, true);
+            ly += 10;
+        }
+        ctx.disableScissor();
     }
 
     private static boolean isClick(boolean lmbDown, boolean rmbDown) {
@@ -379,15 +417,15 @@ public final class StorageOverlay {
                 // and whichever one you point at. Hovering the figure breaks it down.
                 if (Cfg.showValue() && (isCurrentPage || mouseOverPage) && rY > y && rY < pagesBottom) {
                     List<ItemStack> priced = isCurrentPage && liveMenu != null ? liveItems(liveMenu, false) : page.items;
-                    refreshValue(page.name, priced);
-                    String shown = valueText != null ? "&a" + valueText
+                    Valued v = valueOf(page.name, priced);
+                    String shown = v.text() != null ? "&a" + v.text()
                             : (ItemValue.INSTANCE.pricesReady() ? null : "&8...");
                     if (shown != null) {
                         double vx = rX + Utils.getStringWidth(pageLabel) + 5;
                         Utils.drawString(ctx, shown, vx, rY - 12, true);
-                        if (valueLines != null && mx >= vx && mx <= vx + Utils.getStringWidth(shown)
+                        if (v.lines() != null && mx >= vx && mx <= vx + Utils.getStringWidth(shown)
                                 && my >= rY - 13 && my <= rY - 1) {
-                            tooltips.add(new Tooltip(valueLines, mx, my, "value:" + page.name));
+                            tooltips.add(new Tooltip(v.lines(), mx, my, "value:" + page.name));
                         }
                     }
                 }
@@ -438,6 +476,15 @@ public final class StorageOverlay {
 
         // inventory (panel starts 6px above the first slot row so the border is visible, like a
         // normal inventory, and ends 82px below invY as in the original layout)
+
+        // the open container's worth, beside the pages
+        if (Cfg.valuePanelSide() > 0 && liveMenu != null && !name.equals("Storage")) {
+            Valued open = valueOf(name, liveItems(liveMenu, false));
+            if (open.lines() != null) {
+                drawValuePanel(ctx, open.lines(), x, w, y, pagesBottom, screenWidth);
+            }
+        }
+
         Utils.drawNineSlice(ctx, DEMO_BACKGROUND, x, invY - 6, w + 1, 88,
                 DEMO_PANEL_W, DEMO_PANEL_H, DEMO_BORDER, 256, 256, tint);
         for (int i = 0; i < 36; i++) {
