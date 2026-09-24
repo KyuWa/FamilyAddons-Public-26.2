@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.world.entity.Entity;
-import org.kyowa.familyaddons.features.CorpseESP;
 import org.kyowa.familyaddons.features.DungeonHighlight;
 import org.kyowa.familyaddons.features.EntityHighlight;
 import org.kyowa.familyaddons.features.KuudraHighlight;
@@ -50,10 +49,5 @@ public class EntityOutlineMixin<T extends Entity, S extends EntityRenderState> {
             return;
         }
 
-        // CorpseESP outline
-        int corpseColor = CorpseESP.INSTANCE.getOutlineColor(entity);
-        if (corpseColor != 0) {
-            state.outlineColor = corpseColor;
-        }
     }
 }

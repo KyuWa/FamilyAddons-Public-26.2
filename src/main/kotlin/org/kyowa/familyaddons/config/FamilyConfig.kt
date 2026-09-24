@@ -30,10 +30,6 @@ class FamilyConfig : Config() {
     var party = PartyConfig()
 
     @Expose @JvmField
-    @Category(name = "Mining", desc = "Mining features — Mineshaft & Pickaxe Ability")
-    var mining = MiningConfig()
-
-    @Expose @JvmField
     @Category(name = "Kuudra", desc = "All Kuudra features")
     var kuudra = KuudraConfig()
 

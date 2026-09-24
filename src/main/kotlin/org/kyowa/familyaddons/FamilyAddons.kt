@@ -37,7 +37,6 @@ object FamilyAddons : ClientModInitializer {
         org.kyowa.familyaddons.features.Contact.register()
         KuudraState.register()
         WorldRenderDispatcher.register()
-        CorpseESP.register()
         EntityHighlight.register()
         ShulkerBoxHighlight.register()
         SparklingCritterHighlight.register()
@@ -78,9 +77,6 @@ object FamilyAddons : ClientModInitializer {
         // Party
         PartyTracker.register()
         PartyRepCheck.register()
-
-        // Rendering & World
-        PickaxeAbility.register()
 
         // Kuudra + Dungeons
         // KuudraPhase must register first — other Kuudra features read its state.

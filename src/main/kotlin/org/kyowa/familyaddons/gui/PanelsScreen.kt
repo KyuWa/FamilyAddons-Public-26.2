@@ -69,7 +69,7 @@ class PanelsScreen(private val parent: Screen?, initialSearch: String) : Screen(
     private val layout = listOf(
         "General" to listOf("general"),
         "Utilities" to listOf("utilities", "chatFilters", "translator", "party", "keybinds", "highlight"),
-        "SkyBlock" to listOf("mining", "crimsonIsle", "dungeons", "foraging", "safari"),
+        "SkyBlock" to listOf("crimsonIsle", "dungeons", "foraging", "safari"),
         "Kuudra" to listOf("kuudra"),
         "Disguise & Names" to listOf("playerDisguise", "nameChanger"),
         "Family Storage" to listOf("storage"),
@@ -144,7 +144,7 @@ class PanelsScreen(private val parent: Screen?, initialSearch: String) : Screen(
         val q = search.value.trim().lowercase()
         if (q.isEmpty()) return p.modules
         // a module matches by its own name, by an option inside it, or by the sub header
-        // (category) it sits under, so "mining" or "crimson isle" pull up that whole block
+        // (category) it sits under, so "kuudra" or "crimson isle" pull up that whole block
         return p.modules.filter { m -> m.name.lowercase().contains(q) || categoryMatches(m, q) || m.options.any { it.name.lowercase().contains(q) } }
     }
 

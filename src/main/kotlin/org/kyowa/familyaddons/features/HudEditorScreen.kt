@@ -129,32 +129,6 @@ class HudEditorScreen : Screen(Component.literal("FA HUD Editor")) {
             }
         ))
 
-        // Pickobulus Timer
-        val pbScale = PickaxeAbility.getScale()
-        val pbPlain = PickaxeAbility.PREVIEW_TEXT.replace(COLOR_CODE_REGEX, "")
-        val pbW = tr.width(pbPlain)
-        val pbX = if (FamilyConfigManager.config.mining.pickobulusHudX == -1)
-            ((sw - pbW * pbScale) / 2f).toInt()
-        else FamilyConfigManager.config.mining.pickobulusHudX
-        val pbY = if (FamilyConfigManager.config.mining.pickobulusHudY == -1)
-            (sh / 2f + 40f).toInt()
-        else FamilyConfigManager.config.mining.pickobulusHudY
-
-        elements.add(HudElement(
-            id = "pickobulusTimer", label = "Pickobulus Timer",
-            x = pbX, y = pbY,
-            w = pbW + 4, h = 10,
-            scale = pbScale,
-            canScale = true,
-            onSave = { elem ->
-                FamilyConfigManager.config.mining.pickobulusHudX = elem.x
-                FamilyConfigManager.config.mining.pickobulusHudY = elem.y
-                FamilyConfigManager.config.mining.pickobulusHudScale = "%.1f".format(elem.scale)
-            },
-            renderContent = { ctx, _ ->
-                ctx.text(tr, Component.literal(PickaxeAbility.PREVIEW_TEXT), 0, 0, 0xFFFFFFFF.toInt(), true)
-            }
-        ))
     }
 
     override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
