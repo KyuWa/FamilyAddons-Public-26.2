@@ -33,8 +33,8 @@ object AutoUpdater {
     private const val MODRINTH_PROJECT = "familyaddons"
     private const val MODRINTH_API = "https://api.modrinth.com/v2/project/$MODRINTH_PROJECT/version"
     private const val MODRINTH_PAGE = "https://modrinth.com/mod/$MODRINTH_PROJECT"
-    private const val GITHUB_API = "https://api.github.com/repos/KyuWa/FamilyAddons/releases/latest"
-    private const val GITHUB_PAGE = "https://github.com/KyuWa/FamilyAddons/releases"
+    private const val GITHUB_API = "https://api.github.com/repos/KyuWa/FamilyAddons-Public-26.2/releases/latest"
+    private const val GITHUB_PAGE = "https://github.com/KyuWa/FamilyAddons-Public-26.2/releases"
 
     private val http: HttpClient by lazy {
         HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(8)).build()
@@ -134,6 +134,8 @@ object AutoUpdater {
             val r = y.getOrElse(i) { 0 }
             if (l != r) return l > r
         }
-        return false
+        // Same numbers: a release beats the pre-release that led up to it,
+        // so 1.0.0 is an update for someone on 1.0.0-beta.
+        return !a.contains('-') && b.contains('-')
     }
 }
