@@ -249,7 +249,7 @@ object EntityHighlight {
             if (manual || bestiary) {
                 // FIX: if resolveEntity returns null (nametag stand can't find its real mob
                 // because the mob died this tick), skip entirely. The old `?: entity` fallback
-                // would add the armor stand itself to `highlighted`, causing the tracer to
+                // would add the armor stand itself to `highlighted`, causing the highlight to
                 // briefly snap to the stand's position before it despawns — visible flicker.
                 val target = if (ruleHit) entity else (resolveEntity(entity) ?: return@forEach)
                 // Defensive: never highlight an invisible nametag stand directly.
@@ -318,73 +318,6 @@ object EntityHighlight {
             if (hidden.isNotEmpty()) drawBoxes(hidden - sparklingSet, parseRgb(BestiaryZoneHighlight.zoneColor(), Triple(1f, 0.67f, 0f)))
         }
 
-        // ── Tracer lines ──────────────────────────────────────────────
-        // Start offset 0.5 blocks forward from camera to avoid near-plane clipping.
-        // That point is directly in front of the camera → projects to crosshair.
-        // Uses LINES_NO_DEPTH so the tracer always draws on top of world geometry.
-        if (config.tracerEnabled) {
-            val count = config.tracerCount.toInt().coerceIn(1, 20)
-            val maxBlocks = config.tracerChunkRange.toDouble() * 16.0
-            val maxDistSq = maxBlocks * maxBlocks
-
-            // Pick the closest N live+highlighted+in-range mobs each frame.
-            // When a mob dies it leaves `highlighted` → instantly drops from this list.
-            val targets = ArrayList<Entity>()
-            for (entity in highlighted + bestiaryHighlighted + shulkerTargets) {
-                if (!entity.isAlive) continue
-                // FIX: never run a tracer to an invisible nametag armor stand. Belt-and-braces
-                // in case one ever makes it into `highlighted` through some other code path.
-                if (entity is ArmorStand) continue
-                val dx = entity.x - cam.x
-                val dy = (entity.boundingBox.minY + entity.boundingBox.maxY) / 2.0 - cam.y
-                val dz = entity.z - cam.z
-                if (dx * dx + dy * dy + dz * dz <= maxDistSq) targets.add(entity)
-            }
-            targets.sortBy { entity ->
-                val dx = entity.x - cam.x
-                val dy = (entity.boundingBox.minY + entity.boundingBox.maxY) / 2.0 - cam.y
-                val dz = entity.z - cam.z
-                dx * dx + dy * dy + dz * dz
-            }
-            val picked = if (targets.size > count) targets.subList(0, count) else targets
-
-            if (picked.isNotEmpty()) {
-                val camera = Minecraft.getInstance().gameRenderer.mainCamera()
-                val yawRad = Math.toRadians(camera.yRot().toDouble())
-                val pitchRad = Math.toRadians(camera.xRot().toDouble())
-                val fwdX = -Math.sin(yawRad) * Math.cos(pitchRad)
-                val fwdY = -Math.sin(pitchRad)
-                val fwdZ = Math.cos(yawRad) * Math.cos(pitchRad)
-
-                val startOffset = 0.5
-                val sx = (fwdX * startOffset).toFloat()
-                val sy = (fwdY * startOffset).toFloat()
-                val sz = (fwdZ * startOffset).toFloat()
-
-                collector.submitCustomGeometry(matrices, FamilyRenderTypes.LINES_NO_DEPTH) { entry, buf ->
-                    for (entity in picked) {
-                        val ex = (entity.x - cam.x).toFloat()
-                        val ey = ((entity.boundingBox.minY + entity.boundingBox.maxY) / 2.0 - cam.y).toFloat()
-                        val ez = (entity.z - cam.z).toFloat()
-
-                        val dx = ex - sx; val dy = ey - sy; val dz = ez - sz
-                        val len = Math.sqrt((dx * dx + dy * dy + dz * dz).toDouble()).toFloat()
-                        val nx = if (len > 0f) dx / len else 0f
-                        val ny = if (len > 0f) dy / len else 0f
-                        val nz = if (len > 0f) dz / len else 0f
-
-                        buf.addVertex(entry, sx, sy, sz)
-                            .setColor(r, g, b, 1.0f)
-                            .setNormal(entry, nx, ny, nz)
-                            .setLineWidth(2.0f)
-                        buf.addVertex(entry, ex, ey, ez)
-                            .setColor(r, g, b, 1.0f)
-                            .setNormal(entry, nx, ny, nz)
-                            .setLineWidth(2.0f)
-                    }
-                }
-            }
-        }
     }
 
     fun hasHighlighted() = (highlighted.isNotEmpty() || bestiaryHighlighted.isNotEmpty()) && shouldScan()

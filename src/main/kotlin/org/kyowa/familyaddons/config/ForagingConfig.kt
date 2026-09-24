@@ -10,17 +10,8 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorAccordion
 /** Foraging: the Big Helix tree route on Torrhus Canyon. */
 class ForagingConfig {
     @Expose @JvmField
-    @ConfigOption(name = "Helix Tree Waypoints", desc = "Big Helix tree route on Torrhus Canyon: box outlines through walls (trees green, etherwarp spots cyan, Evasive shop white) with a distance label. Only the current stop is drawn.")
+    @ConfigOption(name = "Helix Tree Waypoints", desc = "Big Helix tree route on Torrhus Canyon: box outlines (trees green, etherwarp spots cyan, Evasive shop white) with a distance label. Only the current stop is drawn.")
     @ConfigEditorBoolean
     var helixWaypoints = false
 
-    @Expose @JvmField
-    @ConfigOption(name = "Helix Tracer", desc = "Tracer line to the next stop of the Helix route; it auto-advances when you reach the stop. /fa helix next|prev|reset|list steps it by hand.")
-    @ConfigEditorBoolean
-    var helixTracer = true
-
-    @Expose @JvmField
-    @ConfigOption(name = "Helix Tracer Color", desc = "Colour of the tracer line to the next Helix stop.")
-    @ConfigEditorColour
-    var helixTracerColor = "0:230:255:170:0"
 }

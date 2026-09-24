@@ -15,13 +15,13 @@ import org.kyowa.familyaddons.config.FamilyConfigManager
 
 /**
  * The Big Helix tree route on Torrhus Canyon (imported from a Skyblocker
- * waypoint export, bundled as helix_waypoints.json). Box outlines through
- * walls in the export's colours (green = tree, cyan = etherwarp spot, white =
+ * waypoint export, bundled as helix_waypoints.json). Box outlines in the
+ * export's colours (green = tree, cyan = etherwarp spot, white =
  * Evasive shop) with a distance label. Only on Torrhus Canyon, behind the
  * "Helix Tree Waypoints" toggle in the Foraging category.
  *
  * Route mode: the points are visited in file order (the shop is skipped);
- * only the current stop is drawn. A tracer runs from you to it; getting within [REACH] blocks
+ * only the current stop is drawn. Getting within [REACH] blocks
  * of it advances to the next one (wrapping), with a ping. `/fa helix
  * next|prev|reset|list` steps manually.
  */
@@ -65,7 +65,7 @@ object HelixWaypoints {
                 ticker = 0
                 onIsland = enabled() && org.kyowa.familyaddons.util.HypixelLocation.areaName()?.equals(ISLAND, true) == true
             }
-            if (!onIsland || !FamilyConfigManager.config.foraging.helixTracer) return@register
+            if (!onIsland || !enabled()) return@register
             val player = client.player ?: return@register
             val t = target() ?: return@register
             val dx = player.x - (t.x + 0.5); val dy = player.y - t.y; val dz = player.z - (t.z + 0.5)
@@ -109,27 +109,13 @@ object HelixWaypoints {
         matrices.pushPose()
         matrices.translate(-cam.x, -cam.y, -cam.z)
 
-        // Only the current stop is drawn: its box, its label, and the tracer to it.
+        // Only the current stop is drawn: its box and its label.
         val x1 = p.x.toFloat(); val y1 = p.y.toFloat(); val z1 = p.z.toFloat()
         collector.submitCustomGeometry(matrices, FamilyRenderTypes.LINES) { pose, buf -> boxEdges(buf, pose, x1, y1, z1, p.r, p.g, p.b, 1f) }
         collector.submitCustomGeometry(matrices, FamilyRenderTypes.LINES_NO_DEPTH) { pose, buf -> boxEdges(buf, pose, x1, y1, z1, p.r, p.g, p.b, 1f) }
         val centre = Vec3(p.x + 0.5, p.y + 0.5, p.z + 0.5)
         val dist = centre.distanceTo(cam)
 
-        if (FamilyConfigManager.config.foraging.helixTracer) {
-            // Same anchor as the bestiary tracer: half a block in front of the
-            // camera along its own yaw/pitch, so the line starts at the crosshair
-            // and does not jitter with the player's tick position.
-            val yaw = Math.toRadians(camera.yRot().toDouble())
-            val pitch = Math.toRadians(camera.xRot().toDouble())
-            val start = Vec3(cam.x - Math.sin(yaw) * Math.cos(pitch) * 0.5, cam.y - Math.sin(pitch) * 0.5, cam.z + Math.cos(yaw) * Math.cos(pitch) * 0.5)
-            val d = centre.subtract(start).normalize()
-            val c = tracerColor()
-            collector.submitCustomGeometry(matrices, FamilyRenderTypes.LINES_NO_DEPTH) { pose, buf ->
-                buf.addVertex(pose, start.x.toFloat(), start.y.toFloat(), start.z.toFloat()).setColor(c[0], c[1], c[2], c[3]).setNormal(pose, d.x.toFloat(), d.y.toFloat(), d.z.toFloat()).setLineWidth(3f)
-                buf.addVertex(pose, centre.x.toFloat(), centre.y.toFloat(), centre.z.toFloat()).setColor(c[0], c[1], c[2], c[3]).setNormal(pose, d.x.toFloat(), d.y.toFloat(), d.z.toFloat()).setLineWidth(3f)
-            }
-        }
 
         val scale = (dist / 10.0).coerceIn(1.0, 5.0).toFloat()
         val code = if (p.g > 0.9f && p.b > 0.9f) "§b" else if (p.g > 0.9f) "§a" else "§f"
@@ -138,11 +124,6 @@ object HelixWaypoints {
 
         matrices.popPose()
     }
-
-    /** Dev "Helix Tracer Color" ("chroma:alpha:r:g:b") → r, g, b, a in 0..1. */
-    private fun tracerColor(): FloatArray = try {
-        FaColour.floats(FamilyConfigManager.config.foraging.helixTracerColor)
-    } catch (e: Exception) { floatArrayOf(1f, 0.67f, 0f, 0.9f) }
 
     private fun boxEdges(
         buf: com.mojang.blaze3d.vertex.VertexConsumer,

@@ -13,12 +13,12 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 /**
  * Highlight/BE — entity ESP + all bestiary features merged into one
  * category. The master toggle below gates everything here (manual name
- * highlight, bestiary highlight/HUD, shulkers, tracers); the bestiary
+ * highlight, bestiary highlight/HUD, shulkers); the bestiary
  * options live in their own accordion.
  */
 class HighlightConfig {
     @Expose @JvmField
-    @ConfigOption(name = "Enable Highlight", desc = "Master toggle for this whole category — mob name ESP, bestiary highlight/HUD, shulkers and tracers.")
+    @ConfigOption(name = "Enable Highlight", desc = "Master toggle for this whole category — mob name ESP, bestiary highlight/HUD and shulkers.")
     @ConfigEditorBoolean
     var enabled = true
 
@@ -59,24 +59,6 @@ class HighlightConfig {
 
     // Sparkling critters and floor drops moved to the Critter Safari category
     // (2026-09-14), where they are independent of this category's master toggle.
-
-    @Expose @JvmField
-    @ConfigAccordionId(id = 2)
-    @ConfigOption(name = "Tracer Lines", desc = "Draw lines from your crosshair to the nearest highlighted mobs (shulkers included).")
-    @ConfigEditorBoolean
-    var tracerEnabled = false
-
-    @Expose @JvmField
-    @ConfigAccordionId(id = 2)
-    @ConfigOption(name = "Tracer Count", desc = "How many of the closest highlighted mobs to draw tracers to (1–20).")
-    @ConfigEditorSlider(minValue = 1f, maxValue = 20f, minStep = 1f)
-    var tracerCount = 5f
-
-    @Expose @JvmField
-    @ConfigAccordionId(id = 2)
-    @ConfigOption(name = "Tracer Range", desc = "Maximum distance in chunks to draw tracers. Mobs further than this are ignored (ESP is limited to 4 chunks so prob that is best).")
-    @ConfigEditorSlider(minValue = 2f, maxValue = 16f, minStep = 1f)
-    var tracerChunkRange = 4f
 
     @Expose @JvmField
     @ConfigAccordionId(id = 2)

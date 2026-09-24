@@ -42,7 +42,7 @@ object ShulkerBoxHighlight {
     // The Highlight/BE master toggle gates this feature too.
     private fun active() = cfg().enabled && cfg().shulkerHighlightEnabled
 
-    /** Shulker entities currently tracked — used by EntityHighlight's tracers. */
+    /** Shulker entities currently tracked — EntityHighlight checks these before drawing. */
     fun trackedEntities(): List<Entity> = if (active()) entityBoxes else emptyList()
 
     fun register() {

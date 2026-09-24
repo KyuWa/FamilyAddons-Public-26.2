@@ -156,10 +156,10 @@ object FamilyConfigManager {
         }
 
         // Helix route moved from Dev to the public Foraging category: keep the
-        // user's toggles and colour.
+        // user's toggle.
         (obj.get("dev") as? JsonObject)?.let { dev ->
             val foraging = obj.getAsJsonObject("foraging") ?: JsonObject().also { obj.add("foraging", it) }
-            for (k in listOf("helixWaypoints", "helixTracer", "helixTracerColor")) {
+            for (k in listOf("helixWaypoints")) {
                 val v = dev.remove(k)
                 if (v != null && !foraging.has(k)) foraging.add(k, v)
             }

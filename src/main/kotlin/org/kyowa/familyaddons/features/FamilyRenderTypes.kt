@@ -9,9 +9,9 @@ import net.minecraft.resources.Identifier
 import org.kyowa.familyaddons.FamilyAddons
 
 /**
- * How this mod draws in the world. Boxes and tracers test depth, so nothing
- * drawn around a mob or a player can be seen through a block: they go into the
- * same target the world does, and its depth buffer hides them.
+ * How this mod draws in the world. Boxes test depth, so nothing drawn around
+ * a mob or a player can be seen through a block: they go into the same target
+ * the world does, and its depth buffer hides them.
  * [LINES_NO_DEPTH] is kept only as a name the features already use; it is the
  * same depth-tested lines as [LINES]. [BEAM] is the exception — see there.
  */
