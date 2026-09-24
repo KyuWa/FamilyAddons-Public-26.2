@@ -14,7 +14,8 @@ import org.kyowa.familyaddons.FamilyAddons
 /**
  * How this mod draws in the world — and the whole point of this file in the
  * public build: every one of these tests depth, so nothing the mod draws can be
- * seen through a block. [LINES_NO_DEPTH] is kept only as a name the features
+ * seen through a block: they draw into the same target the world does,
+ * so its depth buffer hides them. [LINES_NO_DEPTH] is kept only as a name the features
  * already use; it is the same depth-tested lines as [LINES].
  */
 object FamilyRenderTypes {
@@ -24,7 +25,7 @@ object FamilyRenderTypes {
             "familyaddons_lines",
             RenderSetup.builder(RenderPipelines.LINES)
                 .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
-                .setOutputTarget(OutputTarget.MAIN_TARGET)
+                .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
                 .createRenderSetup()
         )
     }
@@ -67,7 +68,7 @@ object FamilyRenderTypes {
         RenderType.create(
             "familyaddons_beam",
             RenderSetup.builder(BEAM_PIPELINE)
-                .setOutputTarget(OutputTarget.MAIN_TARGET)
+                .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
                 .createRenderSetup()
         )
     }
