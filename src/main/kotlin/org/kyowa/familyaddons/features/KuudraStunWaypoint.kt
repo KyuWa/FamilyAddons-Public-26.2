@@ -15,7 +15,6 @@ import org.kyowa.familyaddons.config.FamilyConfigManager
 /**
  * Kuudra stun-pod waypoint: shows a wireframe box on the chosen pod after
  * buying Human Cannonball, offset-relative until you enter the belly.
- * Ported from pawsup-1.2.5 StunWaypoint.
  *
  * Before the belly-entry teleport the box is drawn relative to the player
  * using the (pod - enter) offset so it lines up for the cannonball shot;

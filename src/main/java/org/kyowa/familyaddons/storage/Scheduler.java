@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Port of ChatTriggers' {@code Client.scheduleTask(delay, cb)}: runs a task
- * after {@code delay} client ticks.
+ * Runs a task after {@code delay} client ticks.
  */
 public final class Scheduler {
 

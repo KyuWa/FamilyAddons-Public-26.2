@@ -22,8 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * FamilyStorage – Java port of the ChatTriggers module (index.js top level:
- * storage, /familystorage, profile detection, setItems).
+ * FamilyStorage – the stored pages, /familystorage, profile detection and setItems.
  */
 public class FamilyStorage {
 

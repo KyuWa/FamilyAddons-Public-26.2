@@ -46,7 +46,7 @@ object KuudraState {
     // so ClientPlayConnectionEvents.JOIN fires again and resetAll() wiped
     // inKuudra a few seconds before Elle's Phase 1 line — every Kuudra
     // waypoint/beam feature stayed gated off and "KUUDRA DOWN!" was ignored.
-    // So, like Odin's KuudraUtils, treat the sidebar ("⏣ Kuudra's Hollow (T2)")
+    // So treat the sidebar ("⏣ Kuudra's Hollow (T2)")
     // and tab list ("Area: Kuudra") as the source of truth for being inside
     // the instance; the chat trigger is kept only as a fallback.
     private val SCOREBOARD_TIER = Regex("""Kuudra's Hollow \(T(\d)\)""")

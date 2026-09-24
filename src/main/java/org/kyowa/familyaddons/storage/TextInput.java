@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/** Port of the TextInput class from utils.js. */
+/** A single-line text field for the storage search box. */
 public class TextInput {
 
     private static final Set<String> LETTERS = Set.of(

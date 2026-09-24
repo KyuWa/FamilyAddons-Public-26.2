@@ -28,7 +28,7 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 /**
- * PawsUp-style dynamic Pearl Waypoints — Phase E.
+ * Dynamic Pearl Waypoints — Phase E.
  *
  * Adds on top of Phase B/C/D:
  *  - "NOW sound" — play a single ping the first frame the throw window opens.
@@ -68,7 +68,7 @@ object PearlWaypoints {
     // and shared across PearlWaypoints + PileWaypoints. Read from
     // KuudraOccupancy.occupiedPlaces wherever needed.
 
-    // ── PawsUp's pickTimings table ─────────────────────────────────────
+    // ── The pickTimings table ─────────────────────────────────────
     // [talisman 0..3 = NoTali..T3][kuudraTier-1 0..4 = T1..T5] → ticks
     private val pickTimings: Array<IntArray> = arrayOf(
         intArrayOf(60, 80, 100, 120, 120),  // No Tali
@@ -95,7 +95,7 @@ object PearlWaypoints {
     @Volatile private var lastGrabTps: Double = -1.0
 
     // ── Grab length model ──────────────────────────────────────────────
-    // The pawsup table is only a first guess: measured on 2026-09-07 a
+    // The table above is only a first guess: measured on 2026-09-07 a
     // Burning/T3-tali grab took 86-87 of our ticks against a table value of
     // 70, which fired NOW ~0.8 s early. So the total is now, in priority:
     //   1. live projection from the progress bar (elapsed * 100 / pct) once
@@ -386,7 +386,7 @@ object PearlWaypoints {
     }
 
     /**
-     * PawsUp's sky-marker render gate: only X_CANNON@X_CANNON, SHOP@SHOP, and
+     * Sky-marker render gate: only X_CANNON@X_CANNON, SHOP@SHOP, and
      * TRIANGLE@SHOP (with newPrio) get high-arc waypoints.
      */
     private fun shouldRenderSkyMarker(place: Place, pre: Pre, useNewPrio: Boolean): Boolean {
@@ -470,7 +470,7 @@ object PearlWaypoints {
             }
         }
 
-        // ── Sky marker — restricted to PawsUp's 3 cases, only when main path is active ──
+        // ── Sky marker — restricted to 3 cases, only when main path is active ──
         if (cfg.pearlSkyPearls && !mainHidden && mainPlace != null && supplyDest != null
             && shouldRenderSkyMarker(mainPlace, pre, FamilyConfigManager.config.kuudra.pearlNewPrio)) {
             val adjusted = Vec3(supplyDest.x, supplyDest.y + yOffsetFor(pre), supplyDest.z)
@@ -481,7 +481,7 @@ object PearlWaypoints {
         }
 
         // ── Double pearls — fixed handoff routes ───────────────────────
-        // PawsUp's logic: for each route whose `pre` matches the player's current
+        // For each route whose `pre` matches the player's current
         // Pre area, run a HIGH-ARC pearl solve from eye → dp.location, and draw
         // the waypoint at the SOLVER'S AIM POINT (a point along the player's
         // required look direction), not at the literal handoff coordinate.

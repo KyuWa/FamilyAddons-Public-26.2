@@ -3,9 +3,7 @@ package org.kyowa.familyaddons.features.safari
 /**
  * The Critter Safari roster: 37 species across four biomes.
  *
- * The species list, their biomes and the chat wordings [SafariTracker] matches were
- * taken from Critter Safari Tracker by Rok (https://github.com/MrCloudy2/critterMod),
- * which is MIT licensed. Copyright (c) Rok. Nothing else of that mod is used here.
+ * The species list, their biomes, and the chat wordings [SafariTracker] matches.
  */
 enum class SafariBiome(val displayName: String, val color: String) {
     FOREST("Forest", "§a"),

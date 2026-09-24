@@ -668,7 +668,7 @@ class KuudraConfig {
 
     @Expose @JvmField
     @ConfigAccordionId(id = 13)
-    @ConfigOption(name = "Enable", desc = "In the DPS phase, announce each Rend pull: when it landed after Kuudra surfaced and how much it did (20M+ drops). Ported from the chearys module and not yet tested here.")
+    @ConfigOption(name = "Enable", desc = "In the DPS phase, announce each Rend pull: when it landed after Kuudra surfaced and how much it did (20M+ drops). Not yet tested.")
     @ConfigEditorBoolean
     var rendDamage = false
 

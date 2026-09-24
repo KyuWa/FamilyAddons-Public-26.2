@@ -14,9 +14,9 @@ import org.kyowa.familyaddons.FamilyAddons
 import org.kyowa.familyaddons.config.FamilyConfigManager
 
 /**
- * The Big Helix tree route on Torrhus Canyon (imported from a Skyblocker
- * waypoint export, bundled as helix_waypoints.json). Box outlines in the
- * export's colours (green = tree, cyan = etherwarp spot, white =
+ * The Big Helix tree route on Torrhus Canyon (bundled as
+ * helix_waypoints.json). Box outlines in their
+ * own colours (green = tree, cyan = etherwarp spot, white =
  * Evasive shop) with a distance label. Only on Torrhus Canyon, behind the
  * "Helix Tree Waypoints" toggle in the Foraging category.
  *

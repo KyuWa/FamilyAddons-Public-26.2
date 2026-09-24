@@ -46,7 +46,7 @@ public class StorageData {
         /** saved scroll position for this profile's storage GUI */
         public double scroll = 0;
 
-        /** Port of {@code getDefault()}. */
+        /** The empty starting state. */
         public static ProfileData getDefault() {
             ProfileData p = new ProfileData();
             for (int i = 1; i <= 9; i++) {

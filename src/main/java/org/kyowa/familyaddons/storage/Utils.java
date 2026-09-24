@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-/** Port of utils.js plus the ChatTriggers Renderer/ChatLib helpers the module used. */
+/** Drawing, chat and formatting helpers the storage screens share. */
 public final class Utils {
 
     private Utils() {}
 
-    // ChatTriggers Renderer colour constants (Minecraft chat colours)
+    // Minecraft chat colours
     public static final int GREEN = color(85, 255, 85, 255);
     public static final int RED = color(255, 85, 85, 255);
     public static final int YELLOW = color(255, 255, 85, 255);

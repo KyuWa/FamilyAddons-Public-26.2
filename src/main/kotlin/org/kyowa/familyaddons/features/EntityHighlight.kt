@@ -155,8 +155,8 @@ object EntityHighlight {
      *
      * On Hypixel SkyBlock, mob NPCs are spawned as Player instances (full player skins,
      * custom AI). A real player can be told apart from an NPC because real players have an
-     * entry in the tab list (PlayerListEntry); NPC mobs do not. This is the same check used
-     * by SkyHanni and Odin to avoid hitting NPCs with anti-cheat-style filters.
+     * entry in the tab list (PlayerListEntry); NPC mobs do not. This is the usual check
+     * to avoid hitting NPCs with anti-cheat-style filters.
      *
      * Returns false for non-player entities (mobs, animals, armor stands etc.).
      */

@@ -16,8 +16,7 @@ import org.kyowa.familyaddons.COLOR_CODE_REGEX
 import org.kyowa.familyaddons.config.FamilyConfigManager
 
 /**
- * Dungeon mob highlight, ported from OdinFabric's Highlight module
- * (odtheking, BSD-3-Clause). Uses the glow-outline drawing style via
+ * Dungeon mob highlight. Uses the glow-outline drawing style via
  * [org.kyowa.familyaddons.mixin.EntityOutlineMixin].
  *
  * Fully independent of the Highlight category — gated only on its own
@@ -124,7 +123,7 @@ object DungeonHighlight {
                     if (seenBatIds.add(entity.id)) {
                         // Freshly spawned bat right next to the player is a
                         // spirit sceptre proc, not a dungeon secret bat. The
-                        // radius is a bit wider than Odin's 1.0 because our
+                        // radius is a bit wider than one block because our
                         // scan runs every 10 ticks, not on the spawn packet.
                         if (player.distanceTo(entity) < 2.5f) {
                             spiritSceptreIds.add(entity.id)

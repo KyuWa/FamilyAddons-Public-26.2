@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 /**
- * Port of PersistentObject.js: a JSON file in {@code config/FamilyStorage/} that is
+ * A JSON file in {@code config/FamilyStorage/} that is
  * loaded on construction and written on {@link #save()}.
  */
 public class PersistentObject {

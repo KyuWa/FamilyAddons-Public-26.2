@@ -23,8 +23,7 @@ import org.kyowa.familyaddons.util.HypixelLocation
  * before you joined. The counts are of unique species, so a second Gemzie adds
  * nothing.
  *
- * Chat wordings and the species roster come from Critter Safari Tracker by Rok
- * (MIT), see [SafariCritters].
+ * Chat wordings and the species roster live in [SafariCritters].
  */
 object SafariTracker {
 

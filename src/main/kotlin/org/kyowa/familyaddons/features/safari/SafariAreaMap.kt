@@ -8,13 +8,11 @@ import org.kyowa.familyaddons.FamilyAddons
  * Neither the scoreboard nor the tab list names the biome you stand in, so it has
  * to come from where you are. The biomes are not convex (Forest and Haunted
  * interleave, the caves fold over each other), so nearest-centre is wrong for a few
- * percent of the map. SkyHanni's island path graph solves that with a graph walk;
- * critterMod ran that walk offline once over the 1,327 graph nodes and collapsed it
- * to one `x y z biome` row per node. At runtime this is a nearest-node lookup.
+ * percent of the map. An island path graph solves that with a graph walk; that walk
+ * was run offline once over the 1,327 graph nodes and collapsed to one
+ * `x y z biome` row per node. At runtime this is a nearest-node lookup.
  *
- * `safari_areas.txt` and this approach come from Critter Safari Tracker by Rok
- * (https://github.com/MrCloudy2/critterMod, MIT). Codes: 1 Forest, 2 Cavern,
- * 3 Icy, 4 Haunted, 0 the hub / entrance (no biome).
+ * Codes: 1 Forest, 2 Cavern, 3 Icy, 4 Haunted, 0 the hub / entrance (no biome).
  */
 object SafariAreaMap {
 

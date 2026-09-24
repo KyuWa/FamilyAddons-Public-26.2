@@ -32,9 +32,7 @@ import java.util.UUID
  * A nest is also crossed off by punching it and getting a bee. The punch alone is not
  * the signal, because an already-emptied nest can be hit all day: the mark goes only
  * when a bee that was not there before turns up next to the spot within a few seconds.
- *
- * Positions and the state machine are adapted from Critter Safari Tracker by Rok
- * (https://github.com/MrCloudy2/critterMod, MIT).
+
  */
 object BeeSpotHighlight {
 

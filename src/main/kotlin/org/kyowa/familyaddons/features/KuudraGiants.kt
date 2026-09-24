@@ -22,7 +22,7 @@ import kotlin.math.sin
  * independently, and avoids two scans of `world.entitiesForRendering()` per tick.
  *
  * Crate position math is also exposed here ([cratePosFor]) so both consumers
- * use the exact same PawsUp-derived formula:
+ * use the exact same formula:
  *   x = giant.x + 2.7 * cos((yaw + 130°) * π/180)
  *   z = giant.z + 5.2 * sin((yaw + 130°) * π/180)
  *   y = 75.5 (literal world Y, independent of the giant's Y)
@@ -49,7 +49,6 @@ object KuudraGiants {
 
     /**
      * Compute crate world position from a giant's position + yaw.
-     * Same formula as PawsUp's published values.
      */
     fun cratePosFor(g: Giant): Vec3 {
         val angleRad = Math.toRadians(g.yRot + CRATE_YAW_BIAS_DEG)

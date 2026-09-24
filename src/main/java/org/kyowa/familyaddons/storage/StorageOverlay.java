@@ -27,7 +27,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** Port of the drawing half of index.js (startDraw / drawStorage and their globals). */
+/** The drawing half of the storage overlay: startDraw, drawStorage and their state. */
 public final class StorageOverlay {
 
     private StorageOverlay() {}

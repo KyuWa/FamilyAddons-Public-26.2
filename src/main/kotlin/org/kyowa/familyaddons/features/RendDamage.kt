@@ -12,7 +12,7 @@ import java.util.Locale
 /**
  * Rend damage: how hard each Rend pull hit Kuudra in the DPS phase, and when.
  *
- * Ported from the chearys ChatTriggers module, untested here. Kuudra is the giant
+ * Untested so far. Kuudra is the giant
  * magma cube; in the DPS phase his synced health starts at 25,000 and each unit
  * stands for 9,600 real HP (240M at full). A drop of more than 2,083 units in one
  * sample (20M) can only be a pull, so that is what gets announced: "Pull at 2.4s
