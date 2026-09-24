@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.ConfigAccordionId
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorAccordion
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
@@ -26,12 +25,6 @@ class StorageConfig {
     @ConfigOption(name = "Container Value", desc = "Show what the page you have open is worth beside its name, and list what is in it when you hover the figure. Bazaar goods are priced at insta-sell and auction items at what they sell for, so the total is a floor.")
     @ConfigEditorBoolean
     var containerValue = true
-
-    @Expose @JvmField
-    @ConfigAccordionId(id = 1)
-    @ConfigOption(name = "Value Panel", desc = "Show the open container's worth as a panel beside the pages, listing what is in it. Off leaves just the figure next to the page name.")
-    @ConfigEditorDropdown(values = ["Off", "Left", "Right"])
-    var valuePanelSide = 2
 
     @Expose @JvmField
     @ConfigAccordionId(id = 1)
