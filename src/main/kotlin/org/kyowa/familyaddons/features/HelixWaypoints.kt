@@ -63,7 +63,7 @@ object HelixWaypoints {
         ClientTickEvents.END_CLIENT_TICK.register { client ->
             if (++ticker >= 20) {
                 ticker = 0
-                onIsland = enabled() && Waypoints.getCurrentIsland() == ISLAND
+                onIsland = enabled() && org.kyowa.familyaddons.util.HypixelLocation.areaName()?.equals(ISLAND, true) == true
             }
             if (!onIsland || !FamilyConfigManager.config.foraging.helixTracer) return@register
             val player = client.player ?: return@register

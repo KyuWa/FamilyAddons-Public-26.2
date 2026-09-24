@@ -14,8 +14,7 @@ object WorldRenderDispatcher {
 
     fun register() {
         LevelRenderEvents.COLLECT_SUBMITS.register { ctx ->
-            if (!Waypoints.hasWaypoints() &&
-                !CorpseESP.hasCachedCorpses() &&
+            if (!CorpseESP.hasCachedCorpses() &&
                 !EntityHighlight.hasHighlighted() &&
                 !KuudraCrateWaypoints.hasCrates() &&
                 !KuudraStunWaypoint.hasWaypoint() &&
@@ -40,7 +39,6 @@ object WorldRenderDispatcher {
 
             matrices.pushPose()
 
-            Waypoints.onWorldRender(matrices, collector, cam)
             CorpseESP.onWorldRender(matrices, collector, cam)
             EntityHighlight.onWorldRender(matrices, collector, cam)
             KuudraCrateWaypoints.onWorldRender(matrices, collector, camera)

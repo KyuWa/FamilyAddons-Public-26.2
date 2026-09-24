@@ -49,10 +49,6 @@ class FamilyConfig : Config() {
 
 
     @Expose @JvmField
-    @Category(name = "Waypoints", desc = "Waypoint features")
-    var waypoints = WaypointsConfig()
-
-    @Expose @JvmField
     @Category(name = "Highlight/BE", desc = "Entity highlight and the bestiary tracker")
     var highlight = HighlightConfig()
 

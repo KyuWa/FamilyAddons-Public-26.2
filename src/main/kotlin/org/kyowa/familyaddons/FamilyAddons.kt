@@ -38,7 +38,6 @@ object FamilyAddons : ClientModInitializer {
         KuudraState.register()
         WorldRenderDispatcher.register()
         CorpseESP.register()
-        Waypoints.register()
         EntityHighlight.register()
         ShulkerBoxHighlight.register()
         SparklingCritterHighlight.register()

@@ -123,7 +123,8 @@ object Contact {
                         val o = element.asJsonObject
                         val from = o.get("from")?.asString?.takeIf { it.isNotBlank() } ?: "KyoWaa"
                         val text = o.get("text")?.asString ?: continue
-                        FaChat.send("§6$from §7replied: §f$text")
+                        val about = o.get("about")?.asString?.takeIf { it.isNotBlank() } ?: "message"
+                        FaChat.send("§6$from §7replied to your $about: §f$text")
                     }
                 }
             } catch (e: Exception) {

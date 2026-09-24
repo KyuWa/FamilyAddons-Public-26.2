@@ -69,7 +69,7 @@ class PanelsScreen(private val parent: Screen?, initialSearch: String) : Screen(
     private val layout = listOf(
         "General" to listOf("general"),
         "Utilities" to listOf("utilities", "chatFilters", "translator", "party", "keybinds", "highlight"),
-        "SkyBlock" to listOf("mining", "crimsonIsle", "dungeons", "foraging", "safari", "waypoints"),
+        "SkyBlock" to listOf("mining", "crimsonIsle", "dungeons", "foraging", "safari"),
         "Kuudra" to listOf("kuudra"),
         "Disguise & Names" to listOf("playerDisguise", "nameChanger"),
         "Family Storage" to listOf("storage"),
