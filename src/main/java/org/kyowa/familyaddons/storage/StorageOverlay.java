@@ -1,5 +1,6 @@
 package org.kyowa.familyaddons.storage;
 
+import org.kyowa.familyaddons.features.ItemValue;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -188,106 +189,26 @@ public final class StorageOverlay {
         }
     }
 
-    // toggle switch colours (purple / black theme)
-    private static final int TRACK_BORDER = Utils.color(60, 20, 90);
-    private static final int TRACK_TOP = Utils.color(40, 8, 60);
-    private static final int TRACK_BOTTOM = Utils.color(8, 8, 12);
-    private static final int TRACK_TOP_HOVER = Utils.color(70, 20, 105);
-    private static final int TRACK_BOTTOM_HOVER = Utils.color(18, 12, 26);
-    private static final int TRACK_TICK = Utils.color(90, 40, 130, 140);
+    // scrollbar thumb
     private static final int KNOB_ON_TOP = Utils.color(200, 110, 255);
-    private static final int KNOB_ON_BOTTOM = Utils.color(90, 25, 170);
-    private static final int KNOB_ON_EDGE = Utils.color(225, 170, 255);
-    private static final int KNOB_OFF_TOP = Utils.color(240, 70, 70);
-    private static final int KNOB_OFF_BOTTOM = Utils.color(110, 15, 25);
-    private static final int KNOB_OFF_EDGE = Utils.color(255, 150, 150);
-    private static final int LABEL_BRIGHT = Utils.color(200, 110, 255);
-    private static final int LABEL_DARK = Utils.color(75, 20, 125);
-    private static double toggleAnim = -1; // -1 until first drawn
-    private static long toggleAnimLastNs = 0;
 
-    /** Draws text with a slowly sweeping purple-to-dark gradient across its characters. */
-    private static void drawGradientLabel(GuiGraphicsExtractor ctx, String text, double x, double y) {
-        double phase = (System.currentTimeMillis() % 2400L) / 2400.0;
-        MutableComponent label = Component.empty();
-        int n = Math.max(1, text.length() - 1);
-        for (int i = 0; i < text.length(); i++) {
-            double t = (double) i / n - phase;
-            double k = 0.5 - 0.5 * Math.cos(2 * Math.PI * t);
-            int rgb = Utils.lerpColor(LABEL_DARK, LABEL_BRIGHT, k) & 0xFFFFFF;
-            label.append(Component.literal(String.valueOf(text.charAt(i))).withStyle(Style.EMPTY.withColor(rgb)));
-        }
-        ctx.text(Minecraft.getInstance().font, label, (int) Math.floor(x), (int) Math.floor(y), Utils.WHITE, true);
-    }
+    // ── what the open container is worth ──────────────────────────────
+    // Pricing a page means reading every item's NBT, so the answer is kept for
+    // a moment rather than worked out again on every frame.
+    private static final long VALUE_REFRESH_MS = 250;
+    private static String valueText = null;
+    private static List<Component> valueLines = null;
+    private static String valueFor = null;
+    private static long valueAtMs = 0;
 
-    /** Vertical gradient fill (top colour to bottom colour). */
-    private static void fillGradient(GuiGraphicsExtractor ctx, double x, double y, double w, double h, int top, int bottom) {
-        if (w <= 0 || h <= 0) return;
-        ctx.fillGradient((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(x + w), (int) Math.floor(y + h), top, bottom);
-    }
-
-    /** Labelled slider toggle: knob on the right (green) = enabled, left (red) = disabled. */
-    private static void drawToggleButton(GuiGraphicsExtractor ctx, double mx, double my, double screenHeight) {
-        StorageData data = FamilyStorage.storage.data;
-        double x = 8;
-        double labelY = screenHeight - 50;
-        double trackX = x;
-        double trackY = labelY + 13;
-        double trackW = 60;
-        double trackH = 16;
-        double knobW = 16;
-
-        boolean hovered = mx > trackX && mx < trackX + trackW && my > trackY && my < trackY + trackH;
-
-        // animation: 0 = off (left, red) .. 1 = on (right, green), ~180 ms travel, smooth-stepped
-        double target = Cfg.enabled() ? 1 : 0;
-        long now = System.nanoTime();
-        if (toggleAnim < 0) toggleAnim = target;
-        double dt = toggleAnimLastNs == 0 ? 0 : Math.min(0.1, (now - toggleAnimLastNs) / 1e9);
-        toggleAnimLastNs = now;
-        double step = dt / 0.18;
-        if (toggleAnim < target) toggleAnim = Math.min(target, toggleAnim + step);
-        else if (toggleAnim > target) toggleAnim = Math.max(target, toggleAnim - step);
-        double eased = toggleAnim * toggleAnim * (3 - 2 * toggleAnim);
-        boolean moving = toggleAnim != target;
-
-        // label: animated purple gradient
-        drawGradientLabel(ctx, "FamilyStorage", x, labelY);
-
-        // track: purple -> black gradient
-        Utils.drawRect(ctx, TRACK_BORDER, trackX, trackY, trackW, trackH);
-        fillGradient(ctx, trackX + 1, trackY + 1, trackW - 2, trackH - 2,
-                hovered ? TRACK_TOP_HOVER : TRACK_TOP, hovered ? TRACK_BOTTOM_HOVER : TRACK_BOTTOM);
-        for (int i = 1; i < 4; i++) {
-            Utils.drawRect(ctx, TRACK_TICK, trackX + i * trackW / 4, trackY + 4, 1, trackH - 8);
-        }
-
-        // knob: slides across the track while its colour blends red -> purple; it stretches a
-        // little while moving so the motion reads as a real switch
-        int knobTop = Utils.lerpColor(KNOB_OFF_TOP, KNOB_ON_TOP, eased);
-        int knobBottom = Utils.lerpColor(KNOB_OFF_BOTTOM, KNOB_ON_BOTTOM, eased);
-        int knobEdge = Utils.lerpColor(KNOB_OFF_EDGE, KNOB_ON_EDGE, eased);
-        double stretch = moving ? 4 * Math.sin(Math.PI * toggleAnim) : 0;
-        double kw = knobW + stretch;
-        double knobX = trackX + eased * (trackW - knobW) - stretch * eased;
-        Utils.drawRect(ctx, knobEdge, knobX, trackY, kw, trackH);
-        fillGradient(ctx, knobX + 1, trackY + 1, kw - 2, trackH - 2, knobTop, knobBottom);
-        Utils.drawRect(ctx, knobEdge, knobX + kw / 2 - 1, trackY + 4, 2, trackH - 8);
-
-        if (hovered) {
-            if (Utils.isMouseDown(GLFW.GLFW_MOUSE_BUTTON_LEFT)) {
-                if (shouldBeAbleToClick) {
-                    Cfg.setEnabled(!Cfg.enabled());
-                    FamilyStorage.storage.save();
-                    Utils.playButtonSound();
-                    Utils.chat("&e[FamilyStorage] Family Storage gui enabled is now: &6" + Cfg.enabled()
-                            + " &7(reopen storage to apply)");
-                    shouldBeAbleToClick = false;
-                }
-            } else {
-                shouldBeAbleToClick = true;
-            }
-        }
+    private static void refreshValue(String pageName, List<ItemStack> items) {
+        long now = System.currentTimeMillis();
+        if (pageName.equals(valueFor) && now - valueAtMs < VALUE_REFRESH_MS) return;
+        valueFor = pageName;
+        valueAtMs = now;
+        double worth = ItemValue.INSTANCE.totalOf(items);
+        valueText = worth > 0 ? ItemValue.INSTANCE.formatShort(worth) : null;
+        valueLines = worth > 0 ? ItemValue.INSTANCE.breakdown(items, pageName) : null;
     }
 
     private static boolean isClick(boolean lmbDown, boolean rmbDown) {
@@ -368,9 +289,6 @@ public final class StorageOverlay {
         // grey background
         Utils.drawRect(ctx, Utils.color(0, 0, 0, 150), 0, 0, screenWidth, screenHeight);
 
-        // toggle button
-        drawToggleButton(ctx, mx, my, screenHeight);
-
         // search bar
         double ix = screenWidth / 2 + 90;
         double iy = invY;
@@ -417,8 +335,9 @@ public final class StorageOverlay {
                 double rX = x - w + colIndex * w + 8;
                 double rY = y + rowIndex * h + scroll + 18;
                 double pageHeight = page.size * 2;
+                String pageLabel = (name.equals("Storage") || !isCurrentPage) ? page.name : "&e&l" + page.name;
                 if (rY > y && rY < pagesBottom) {
-                    Utils.drawString(ctx, (name.equals("Storage") || !isCurrentPage) ? page.name : "&e&l" + page.name, rX, rY - 12, true);
+                    Utils.drawString(ctx, pageLabel, rX, rY - 12, true);
                 }
                 if (rY + pageHeight < y || rY > pagesBottom) {
                     continue;
@@ -452,6 +371,20 @@ public final class StorageOverlay {
                 }
 
                 ctx.disableScissor();
+
+                // Its worth, beside the name; hovering the figure breaks it down.
+                if (isCurrentPage && rY > y && rY < pagesBottom) {
+                    refreshValue(page.name, liveMenu != null ? liveItems(liveMenu, false) : page.items);
+                    if (valueText != null) {
+                        String shown = "&a" + valueText;
+                        double vx = rX + Utils.getStringWidth(pageLabel) + 5;
+                        Utils.drawString(ctx, shown, vx, rY - 12, true);
+                        if (valueLines != null && mx >= vx && mx <= vx + Utils.getStringWidth(shown)
+                                && my >= rY - 13 && my <= rY - 1) {
+                            tooltips.add(new Tooltip(valueLines, mx, my, "value:" + page.name));
+                        }
+                    }
+                }
 
                 // check if mouse is over a page and check for click
                 boolean mouseOverPage = mx > rX && mx < rX + 161 && my > rY && my < rY + Math.min(page.size * 2, pagesBottom - rY);
@@ -718,16 +651,8 @@ public final class StorageOverlay {
         AbstractContainerScreen<?> container = (AbstractContainerScreen<?>) screen;
         StorageData storageData = FamilyStorage.storage.data;
 
-        if (!Cfg.enabled()) {
-            ScreenEvents.afterExtract(screen).register((s, ctx, mouseX, mouseY, delta) -> {
-                double f = scaleFactor();
-                ctx.pose().pushMatrix();
-                ctx.pose().scale((float) (1 / f), (float) (1 / f));
-                drawToggleButton(ctx, mouseX * f, mouseY * f, ctx.guiHeight() * f);
-                ctx.pose().popMatrix();
-            });
-            return;
-        }
+        // Switched off in the config: leave the vanilla screen alone.
+        if (!Cfg.enabled()) return;
 
         // load saved scroll position for this profile (if any)
         if (storageData.currentProfile != null && storageData.profiles.containsKey(storageData.currentProfile)) {
