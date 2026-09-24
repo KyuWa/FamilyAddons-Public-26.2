@@ -7,8 +7,8 @@ import net.minecraft.world.item.ItemStack
  * What a container is worth, from the prices [ItemPrices] already keeps.
  *
  * Everything is valued at what you would get for it rather than what it would
- * cost to buy: bazaar goods at insta-sell, auction items at the lowest BIN. An
- * item with no price counts as nothing, so the total is a floor, never a guess.
+ * cost to buy: bazaar goods at insta-sell, auction items at what they sell
+ * for. An item with no price counts as nothing, so the total is a floor.
  */
 object ItemValue {
 
@@ -22,11 +22,11 @@ object ItemValue {
         val id = ItemPrices.idOf(stack) ?: return 0.0
         val count = stack.count.coerceAtLeast(1)
 
-        // A pet's listing is per rarity; the level-1 price is the floor for one.
+        // Pets are priced by their kind: "PET:SPIRIT:4" is the SPIRIT auction tag.
         if (id.startsWith("PET:")) {
             val parts = id.split(":")
             if (parts.size < 3) return 0.0
-            return (ItemPrices.binOf("${parts[1]};${parts[2]}") ?: 0.0) * count
+            return (ItemPrices.sellOf("PET_${parts[1]}") ?: 0.0) * count
         }
 
         if (id.startsWith("ENCHBOOK:")) {
@@ -37,7 +37,13 @@ object ItemValue {
         }
 
         ItemPrices.bazaarOf(id)?.let { return it.instaSell * count }
-        return (ItemPrices.binOf(id) ?: 0.0) * count
+        return (ItemPrices.sellOf(id) ?: ItemPrices.binOf(id) ?: 0.0) * count
+    }
+
+    /** False until the first price list has landed, so a page can say it is still loading. */
+    fun pricesReady(): Boolean {
+        ItemPrices.ensureFresh()
+        return ItemPrices.hasPrices()
     }
 
     /** Everything in a container added up. */

@@ -372,11 +372,17 @@ public final class StorageOverlay {
 
                 ctx.disableScissor();
 
-                // Its worth, beside the name; hovering the figure breaks it down.
-                if (isCurrentPage && rY > y && rY < pagesBottom) {
-                    refreshValue(page.name, liveMenu != null ? liveItems(liveMenu, false) : page.items);
-                    if (valueText != null) {
-                        String shown = "&a" + valueText;
+                // check if mouse is over a page and check for click
+                boolean mouseOverPage = mx > rX && mx < rX + 161 && my > rY && my < rY + Math.min(page.size * 2, pagesBottom - rY);
+
+                // What the page is worth, beside its name: the one you have open,
+                // and whichever one you point at. Hovering the figure breaks it down.
+                if (Cfg.showValue() && (isCurrentPage || mouseOverPage) && rY > y && rY < pagesBottom) {
+                    List<ItemStack> priced = isCurrentPage && liveMenu != null ? liveItems(liveMenu, false) : page.items;
+                    refreshValue(page.name, priced);
+                    String shown = valueText != null ? "&a" + valueText
+                            : (ItemValue.INSTANCE.pricesReady() ? null : "&8...");
+                    if (shown != null) {
                         double vx = rX + Utils.getStringWidth(pageLabel) + 5;
                         Utils.drawString(ctx, shown, vx, rY - 12, true);
                         if (valueLines != null && mx >= vx && mx <= vx + Utils.getStringWidth(shown)
@@ -385,9 +391,6 @@ public final class StorageOverlay {
                         }
                     }
                 }
-
-                // check if mouse is over a page and check for click
-                boolean mouseOverPage = mx > rX && mx < rX + 161 && my > rY && my < rY + Math.min(page.size * 2, pagesBottom - rY);
                 if (mouseOverPage || isCurrentPage) {
                     // render outline
                     Utils.drawLine(ctx, Utils.YELLOW, rX - 2, Math.max(y, rY - 3), rX - 2, Math.min(pagesBottom, rY + page.size * 2 + 1), 2);

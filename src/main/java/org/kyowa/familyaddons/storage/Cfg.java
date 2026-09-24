@@ -11,6 +11,8 @@ public final class Cfg {
 
     public static boolean enabled() { return cfg().enabled; }
     public static void setEnabled(boolean v) { cfg().enabled = v; FamilyConfigManager.INSTANCE.save(); }
+    public static boolean showValue() { return cfg().containerValue; }
+
     public static int alpha() { return Math.max(0, Math.min(100, Math.round(cfg().alpha))); }
     public static void setAlpha(int v) { cfg().alpha = Math.max(0, Math.min(100, v)); FamilyConfigManager.INSTANCE.save(); }
 
