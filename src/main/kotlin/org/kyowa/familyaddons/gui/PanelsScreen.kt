@@ -84,7 +84,11 @@ class PanelsScreen(private val parent: Screen?, initialSearch: String) : Screen(
         val group = if (grouped) cat.name else null
         val loose = cat.options.filter { it.type != "accordion" && (it.accordion == null || !byId.containsKey(it.accordion)) }
         if (loose.isNotEmpty()) mods.add(Module(cat.key + ".*", cat.name, loose, group, cat.name, cat.key))
-        for (h in headers) mods.add(Module(h.key, h.name, cat.options.filter { it.type != "accordion" && it.accordion == h.id }, group, cat.name, cat.key))
+        for (h in headers) {
+            // a section that only holds other sections has nothing of its own to show
+            val own = cat.options.filter { it.type != "accordion" && it.accordion == h.id }
+            if (own.isNotEmpty()) mods.add(Module(h.key, h.name, own, group, cat.name, cat.key))
+        }
         return mods
     }
 

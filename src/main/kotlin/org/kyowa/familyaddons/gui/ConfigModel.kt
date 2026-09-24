@@ -67,7 +67,7 @@ object ConfigSpec {
                 val default = runCatching { fresh?.let { f.get(it) } }.getOrNull()
                 val spec = when {
                     f.isAnnotationPresent(ConfigEditorAccordion::class.java) ->
-                        OptionSpec(key, opt.name, opt.desc, "accordion", id = f.getAnnotation(ConfigEditorAccordion::class.java).id, field = f, holder = holder, default = false)
+                        OptionSpec(key, opt.name, opt.desc, "accordion", inAcc, id = f.getAnnotation(ConfigEditorAccordion::class.java).id, field = f, holder = holder, default = false)
                     key == "utilities.commandShortcuts" -> OptionSpec(key, opt.name, opt.desc, "shortcuts", inAcc, field = f, holder = holder, default = default)
                     key == "keybinds.customGfsEdit" -> OptionSpec(key, opt.name, opt.desc, "gfslist", inAcc, field = f, holder = holder, default = null)
                     key == "playerDisguise.mobId" -> OptionSpec(key, opt.name, opt.desc, "mobpicker", inAcc, field = f, holder = holder, default = default)

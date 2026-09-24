@@ -126,34 +126,41 @@ class FaConfigScreen(private val parent: Screen?, initialSearch: String) : Scree
             out.add(Entry(KIND_CARD, opt, "", x + indent, colY[c], colW - indent, h, wdg, lines, cut))
             colY[c] += h + 1
         }
-        fun fullWidth(kind: Int, opt: OptionSpec?, label: String, h: Int) {
+        fun fullWidth(kind: Int, opt: OptionSpec?, label: String, h: Int, indent: Int = 0) {
             val y = bottom()
-            out.add(Entry(kind, opt, label, 0, y, contentW, h, null, emptyList(), false))
+            out.add(Entry(kind, opt, label, indent, y, contentW - indent, h, null, emptyList(), false))
             colY.fill(y + h + gap)
         }
 
         if (q.isEmpty()) {
             val headers = selected.options.filter { it.type == "accordion" }.associateBy { it.id }
-            val children = selected.options.filter { it.type != "accordion" && it.accordion != null && headers.containsKey(it.accordion) }.groupBy { it.accordion!! }
-            for (opt in selected.options) {
-                if (opt.type == "accordion") {
-                    fullWidth(KIND_ACCORDION, opt, "", g.lineHeight + cardPad * 2)
-                    val a = groupOpenness(opt)
-                    val kids = children[opt.id] ?: continue
-                    if (a <= 0.001f) continue
-                    // lay the children out in full, then show only the top a-th of them
-                    // and pull everything below up by what is still folded
-                    val startY = bottom()
-                    val first = out.size
-                    for (child in kids) card(child, 10)
-                    val fullH = bottom() - startY
-                    val shownH = (fullH * a).roundToInt()
-                    if (a < 1f) for (i in first until out.size) { out[i].clipY1 = startY; out[i].clipY2 = startY + shownH }
-                    colY.fill(startY + shownH + gap - if (a < 1f) 1 else 0)
-                    continue
+            val children = selected.options.filter { it.accordion != null && headers.containsKey(it.accordion) }.groupBy { it.accordion!! }
+
+            // A group draws its header, then its members one indent deeper — and a
+            // member that is itself a group does the same again, so a section can
+            // hold sections. Each one folds by clipping the band it occupies; an
+            // inner clip is left alone so the outer fold wins while both animate.
+            fun emitGroup(header: OptionSpec, indent: Int) {
+                fullWidth(KIND_ACCORDION, header, "", g.lineHeight + cardPad * 2, indent)
+                val a = groupOpenness(header)
+                if (a <= 0.001f) return
+                val kids = children[header.id] ?: return
+                val startY = bottom()
+                val first = out.size
+                for (child in kids) {
+                    if (child.type == "accordion") emitGroup(child, indent + 10) else card(child, indent + 10)
                 }
+                val fullH = bottom() - startY
+                val shownH = (fullH * a).roundToInt()
+                if (a < 1f) for (i in first until out.size) {
+                    if (out[i].clipY1 == Int.MIN_VALUE) { out[i].clipY1 = startY; out[i].clipY2 = startY + shownH }
+                }
+                colY.fill(startY + shownH + gap - if (a < 1f) 1 else 0)
+            }
+
+            for (opt in selected.options) {
                 if (opt.accordion != null && headers.containsKey(opt.accordion)) continue   // drawn under its header
-                card(opt, 0)
+                if (opt.type == "accordion") emitGroup(opt, 0) else card(opt, 0)
             }
         } else {
             for (cat in ConfigSpec.categories) {
@@ -167,7 +174,13 @@ class FaConfigScreen(private val parent: Screen?, initialSearch: String) : Scree
                 var lastGroup: Int? = -1
                 for (opt in hits) {
                     val group = opt.accordion
-                    if (group != lastGroup && group != null) fullWidth(KIND_LABEL, null, "  › " + (headers[group]?.name ?: ""), g.lineHeight + 2)
+                    if (group != lastGroup && group != null) {
+                        // walk up so a nested section reads as "GFS › Ender Pearl"
+                        val path = ArrayList<String>()
+                        var at = headers[group]
+                        while (at != null) { path.add(0, at.name); at = at.accordion?.let { headers[it] } }
+                        fullWidth(KIND_LABEL, null, "  › " + path.joinToString(" › "), g.lineHeight + 2)
+                    }
                     lastGroup = group
                     card(opt, if (group != null) 10 else 0)
                 }
