@@ -7,7 +7,7 @@ import net.minecraft.util.FormattedCharSequence
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-/** FamilyAddons' colours: the purple band [FA] is drawn in, on a dark violet-black. */
+/** FamilyAddons' colours: the purple band FA ☛ is drawn in, on a dark violet-black. */
 object Theme {
     const val ACCENT = 0xFFC86EFF.toInt()        // (200, 110, 255) bright end of the band
     const val ACCENT_DARK = 0xFF4B147D.toInt()   // (75, 20, 125) dark end

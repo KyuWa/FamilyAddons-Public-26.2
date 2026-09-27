@@ -34,7 +34,7 @@ object ComposterGuard {
         ItemTooltipCallback.EVENT.register { stack, _, _, tooltip ->
             if (!enabled() || !isInsertButton(stack) || !inComposter()) return@register
             tooltip.add(Component.empty())
-            tooltip.add(Component.literal("§cBlocked by ").append(FaChat.gradient("[FA]")))
+            tooltip.add(Component.literal("§cBlocked by ").append(FaChat.gradient("FA ☛")))
         }
     }
 

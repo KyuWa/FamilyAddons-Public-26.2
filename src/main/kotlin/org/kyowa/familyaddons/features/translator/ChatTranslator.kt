@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger
 object ChatTranslator {
 
     /** Plain-text form of the mod prefix, used to recognise our own lines and skip them. */
-    private const val PLAIN_PREFIX = "[FA] "
+    private const val PLAIN_PREFIX = "FA ☛ "
 
     // The mod-wide gradient prefix lives in FaChat; these keep call sites short.
     fun gradient(text: String): MutableComponent = FaChat.gradient(text)
