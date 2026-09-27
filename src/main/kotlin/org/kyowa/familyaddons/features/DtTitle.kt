@@ -64,7 +64,9 @@ object DtTitle {
             // Position from the HUD editor; -1 = auto (centered, above the crosshair).
             // Must match the preview placement in HudEditorScreen.
             val cfg = FamilyConfigManager.config.kuudra
-            val x = if (cfg.dtTitleHudX == -1) ((sw - tw * scale) / 2f).toInt() else cfg.dtTitleHudX
+            // Always centred: a saved x is a fixed column, so a title of a
+            // different length sits off to the side. Height is still yours.
+            val x = ((sw - tw * scale) / 2f).toInt()
             val y = if (cfg.dtTitleHudY == -1) (sh / 2f - 20f).toInt() else cfg.dtTitleHudY
             val color = (alpha shl 24) or 0xFFFFFF
 

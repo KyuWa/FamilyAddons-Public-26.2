@@ -58,7 +58,8 @@ object DungeonDtTitle {
             // Position from the HUD editor; -1 = auto (centered, above the crosshair).
             // Must match the preview placement in HudEditorScreen.
             val cfg = FamilyConfigManager.config.dungeons
-            val x = if (cfg.dungeonDtTitleHudX == -1) ((sw - tw * scale) / 2f).toInt() else cfg.dungeonDtTitleHudX
+            // Centred for the same reason as the Kuudra one.
+            val x = ((sw - tw * scale) / 2f).toInt()
             val y = if (cfg.dungeonDtTitleHudY == -1) (sh / 2f - 40f).toInt() else cfg.dungeonDtTitleHudY
             val color = (alpha shl 24) or 0xFFFFFF
 

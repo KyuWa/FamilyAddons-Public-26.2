@@ -79,9 +79,8 @@ class HudEditorScreen : Screen(Component.literal("FA HUD Editor")) {
         val dtScale = DtTitle.getScale()
         val dtPlain = DtTitle.PREVIEW_TEXT.replace(COLOR_CODE_REGEX, "")
         val dtW = tr.width(dtPlain)
-        val dtX = if (FamilyConfigManager.config.kuudra.dtTitleHudX == -1)
-            ((sw - dtW * dtScale) / 2f).toInt()
-        else FamilyConfigManager.config.kuudra.dtTitleHudX
+        // Drawn where it really appears: centred, whatever was saved before.
+        val dtX = ((sw - dtW * dtScale) / 2f).toInt()
         val dtY = if (FamilyConfigManager.config.kuudra.dtTitleHudY == -1)
             (sh / 2f - 20f).toInt()
         else FamilyConfigManager.config.kuudra.dtTitleHudY
@@ -93,7 +92,8 @@ class HudEditorScreen : Screen(Component.literal("FA HUD Editor")) {
             scale = dtScale,
             canScale = true,
             onSave = { elem ->
-                FamilyConfigManager.config.kuudra.dtTitleHudX = elem.x
+                // x stays auto: the title centres itself on whatever it says.
+                FamilyConfigManager.config.kuudra.dtTitleHudX = -1
                 FamilyConfigManager.config.kuudra.dtTitleHudY = elem.y
                 FamilyConfigManager.config.kuudra.dtTitleScale = "%.1f".format(elem.scale)
             },
@@ -106,9 +106,7 @@ class HudEditorScreen : Screen(Component.literal("FA HUD Editor")) {
         val dunScale = DungeonDtTitle.getScale()
         val dunPlain = DungeonDtTitle.PREVIEW_TEXT.replace(COLOR_CODE_REGEX, "")
         val dunW = tr.width(dunPlain)
-        val dunX = if (FamilyConfigManager.config.dungeons.dungeonDtTitleHudX == -1)
-            ((sw - dunW * dunScale) / 2f).toInt()
-        else FamilyConfigManager.config.dungeons.dungeonDtTitleHudX
+        val dunX = ((sw - dunW * dunScale) / 2f).toInt()
         val dunY = if (FamilyConfigManager.config.dungeons.dungeonDtTitleHudY == -1)
             (sh / 2f - 40f).toInt()
         else FamilyConfigManager.config.dungeons.dungeonDtTitleHudY
