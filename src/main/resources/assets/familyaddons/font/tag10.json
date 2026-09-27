@@ -1,0 +1,11 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "familyaddons:font/tag.png",
+      "height": 10,
+      "ascent": 8,
+      "chars": ["\u261b"]
+    }
+  ]
+}

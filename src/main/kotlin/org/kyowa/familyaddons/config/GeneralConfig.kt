@@ -2,6 +2,7 @@ package org.kyowa.familyaddons.config
 
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.annotations.ConfigAccordionId
@@ -9,6 +10,11 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorAccordion
 import org.kyowa.familyaddons.commands.TestCommand
 
 class GeneralConfig {
+    @Expose @JvmField
+    @ConfigOption(name = "Tag Size", desc = "How tall the hand in the FA chat tag is drawn, in pixels. The game's own letters are 8. Takes effect on the next line the mod prints.")
+    @ConfigEditorDropdown(values = ["6px", "7px", "8px", "9px", "10px", "12px"])
+    var tagSize = 2
+
     @Expose @JvmField
     @ConfigOption(name = "HUD", desc = "")
     @ConfigEditorAccordion(id = 1)

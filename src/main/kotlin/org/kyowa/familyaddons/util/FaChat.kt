@@ -6,6 +6,7 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.FontDescription
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.Identifier
+import org.kyowa.familyaddons.config.FamilyConfigManager
 import org.kyowa.familyaddons.features.NameStyle
 
 /**
@@ -41,14 +42,25 @@ object FaChat {
      * fallback font, where it turns to mush. The mod ships its own copy at 12,
      * so [TAG_FONT] is set on that character and nothing else.
      */
-    private val TAG_FONT = FontDescription.Resource(Identifier.fromNamespaceAndPath("familyaddons", "tag"))
+    /** The heights the mod ships a glyph for, in the order the setting lists them. */
+    val TAG_SIZES = intArrayOf(6, 7, 8, 9, 10, 12)
+
+    private val TAG_FONTS = TAG_SIZES.associateWith {
+        FontDescription.Resource(Identifier.fromNamespaceAndPath("familyaddons", "tag$it"))
+    }
+
+    /** The height in use, from the General setting; anything odd falls back to 8. */
+    fun tagSize(): Int =
+        TAG_SIZES.getOrNull(FamilyConfigManager.config.general.tagSize) ?: 8
+
+    private fun tagFont(): FontDescription = TAG_FONTS[tagSize()] ?: TAG_FONTS.getValue(8)
 
     /** `FA ☛ ` in the gradient, followed by [body]. */
     fun prefixed(body: Component): MutableComponent = tag().append(Component.literal(" ")).append(body)
 
     /** The tag itself: the letters in the band, the hand in the band and its own font. */
     fun tag(): MutableComponent = gradient("FA ")
-        .append(gradient("☛").withStyle { s: Style -> s.withFont(TAG_FONT) })
+        .append(gradient("☛").withStyle { s: Style -> s.withFont(tagFont()) })
     fun prefixed(text: String): MutableComponent = prefixed(Component.literal(text))
 
     /** Convenience: send a prefixed line to the local player's chat. Safe to call from any thread. */

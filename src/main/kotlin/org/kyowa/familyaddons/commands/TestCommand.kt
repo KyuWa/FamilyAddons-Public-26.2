@@ -68,6 +68,14 @@ object TestCommand {
                         .then(literal("status").executes { NameSync.checkStatus(); 1 })
                         .executes { NameSync.help(); 1 })
 
+                    // /fa tag — print the tag at every size it ships, to pick one by eye
+                    .then(literal("tag").executes {
+                        for ((index, size) in FaChat.TAG_SIZES.withIndex()) {
+                            FaChat.send("§7${size}px §8(Tag Size option ${index + 1}${if (size == FaChat.tagSize()) ", in use" else ""})")
+                        }
+                        1
+                    })
+
                     .then(literal("help").executes { help(); 1 })
             )
             // the long spelling opens the same tree
