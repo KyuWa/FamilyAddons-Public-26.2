@@ -18,10 +18,12 @@ import java.util.Locale
  * sample (20M) can only be a pull, so that is what gets announced: "Pull at 2.4s
  * for 27.6M", the time coloured by how quick it was and the damage by how big.
  *
- * Over the original: the clock starts when Kuudra surfaces (not when the run
- * started), samples are taken every tick straight from the entity rather than
- * from a packet that happens to arrive often, a pull is never counted twice, and
- * KUUDRA DOWN prints a summary (pulls, biggest, first).
+ * The clock starts with the Kuudra phase, the same way the module starts it:
+ * the tick you drop under the arena, not when the run started and not when the
+ * submerged cube first reads under 25k. Samples are taken every tick straight
+ * from the entity rather than from a packet that happens to arrive often, a
+ * pull is never counted twice, and KUUDRA DOWN prints a summary (pulls,
+ * biggest, first).
  */
 object RendDamage {
 
@@ -32,6 +34,10 @@ object RendDamage {
     /** A single-sample drop above this is a pull (20M). */
     private const val PULL_UNITS = 20_000_000.0 / HP_PER_UNIT
     private const val RUN_START_MSG = "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!"
+    /** Under the arena: the Kuudra phase has begun. */
+    private const val PHASE_Y = 10L
+    /** Back up top: whatever the cube reads, it is not the fight. */
+    private const val TOP_Y = 30.0
 
     private class Pull(val atMs: Long, val units: Float)
 
@@ -60,6 +66,15 @@ object RendDamage {
         ClientTickEvents.END_CLIENT_TICK.register { client ->
             if (!cfg().rendDamage || done) return@register
             val level = client.level ?: return@register
+            val player = client.player ?: return@register
+
+            // The phase starts on the way down, and nothing above the arena
+            // counts — the cube is there the whole run, reading whatever it likes.
+            if (dpsStartMs == 0L && Math.round(player.y) < PHASE_Y) {
+                dpsStartMs = System.currentTimeMillis()
+            }
+            if (dpsStartMs == 0L || player.y > TOP_Y) { lastHp = -1f; return@register }
+
             var kuudra: MagmaCube? = null
             for (e in level.entitiesForRendering()) if (e is MagmaCube && e.bbWidth >= KUUDRA_MIN_WIDTH) { kuudra = e; break }
             if (kuudra == null) return@register
@@ -68,7 +83,6 @@ object RendDamage {
             // the 25k-and-under stretch is the fight.
             if (hp > DPS_HP_MAX) { lastHp = -1f; return@register }
             val now = System.currentTimeMillis()
-            if (dpsStartMs == 0L) dpsStartMs = now
             if (lastHp >= 0f) {
                 val diff = lastHp - hp
                 if (diff > PULL_UNITS) {
