@@ -398,14 +398,12 @@ object PearlWaypoints {
 
     /**
      * For occupancy fallback: returns the list of Places the player could
-     * still pearl to. Excludes occupied Places and (optionally) Places marked
-     * missing in chat.
+     * still pearl to. Excludes occupied Places and Places called missing in
+     * party chat.
      */
     private fun availableFallbackPlaces(): List<Place> {
-        val cfg = FamilyConfigManager.config.kuudra
         return Place.values().filter { p ->
-            p !in KuudraOccupancy.occupiedPlaces &&
-                    (!cfg.pearlHideOnMissing || p !in MissingSupplies.missing)
+            p !in KuudraOccupancy.occupiedPlaces && p !in MissingSupplies.missing
         }
     }
 
@@ -496,7 +494,7 @@ object PearlWaypoints {
                 // long, and it wants aiming before the spot clears. Only a
                 // crate called missing ("No Square!") takes one down.
                 val destPlace = preToPlace(dp.drop)
-                if (cfg.pearlHideOnMissing && destPlace != null && destPlace in MissingSupplies.missing) continue
+                if (destPlace != null && destPlace in MissingSupplies.missing) continue
 
                 // High-arc solve to the mid-air handoff coordinate.
                 val sol = PearlCalculator.solvePearl(true, eye, spawnPos, dp.location) ?: continue
@@ -840,7 +838,7 @@ object PearlWaypoints {
             // Occupancy is printed because it is useful to see, not because it
             // hides anything any more.
             val occupied = destPlace != null && destPlace in KuudraOccupancy.occupiedPlaces
-            val missing = cfg.pearlHideOnMissing && destPlace != null && destPlace in MissingSupplies.missing
+            val missing = destPlace != null && destPlace in MissingSupplies.missing
             val mark = when {
                 !active -> "§8[wrong-pre]"
                 missing -> "§c[missing]"

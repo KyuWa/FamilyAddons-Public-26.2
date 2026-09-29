@@ -552,12 +552,6 @@ class KuudraConfig {
 
     @Expose @JvmField
     @ConfigAccordionId(id = 11)
-    @ConfigOption(name = "Hide on Missing", desc = "Hide a double-pearl waypoint when its supply has been called as missing.")
-    @ConfigEditorBoolean
-    var pearlHideOnMissing = true
-
-    @Expose @JvmField
-    @ConfigAccordionId(id = 11)
     @ConfigOption(name = "Double Pearl Size", desc = "Size of the double-pearl aim point.")
     @ConfigEditorSlider(minValue = 0.1f, maxValue = 3.0f, minStep = 0.05f)
     var pearlDPearlSize = 0.1f
