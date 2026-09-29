@@ -38,29 +38,25 @@ object FaChat {
     private fun hex(rgb: Int) = "#%06x".format(rgb)
 
     /**
-     * The hand is a detailed glyph and the game would draw it from its 8-pixel
-     * fallback font, where it turns to mush. The mod ships its own copy at 12,
-     * so [TAG_FONT] is set on that character and nothing else.
+     * The hand is a detailed glyph and the game would draw it from its own
+     * fallback font, where it turns to mush. The mod ships its own copy at
+     * eight pixels, the height of the game's letters, and [TAG_FONT] is set on
+     * that character and nothing else.
      */
-    /** The heights the mod ships a glyph for, in the order the setting lists them. */
-    val TAG_SIZES = intArrayOf(6, 7, 8, 9, 10, 12)
-
-    private val TAG_FONTS = TAG_SIZES.associateWith {
-        FontDescription.Resource(Identifier.fromNamespaceAndPath("familyaddons", "tag$it"))
-    }
-
-    /** The height in use, from the General setting; anything odd falls back to 8. */
-    fun tagSize(): Int =
-        TAG_SIZES.getOrNull(FamilyConfigManager.config.general.tagSize) ?: 8
-
-    private fun tagFont(): FontDescription = TAG_FONTS[tagSize()] ?: TAG_FONTS.getValue(8)
+    private val TAG_FONT: FontDescription =
+        FontDescription.Resource(Identifier.fromNamespaceAndPath("familyaddons", "tag8"))
 
     /** `FA ☛ ` in the gradient, followed by [body]. */
     fun prefixed(body: Component): MutableComponent = tag().append(Component.literal(" ")).append(body)
 
-    /** The tag itself: the letters in the band, the hand in the band and its own font. */
-    fun tag(): MutableComponent = gradient("FA ")
-        .append(gradient("☛").withStyle { s: Style -> s.withFont(tagFont()) })
+    /**
+     * The tag itself: the letters bold in the band, the hand in the band and
+     * its own font. The root is empty on purpose — style set on it would be
+     * inherited by whatever [prefixed] appends after it, which is the message.
+     */
+    fun tag(): MutableComponent = Component.empty()
+        .append(gradient("FA ").withStyle { s: Style -> s.withBold(true) })
+        .append(gradient("☛").withStyle { s: Style -> s.withFont(TAG_FONT) })
     fun prefixed(text: String): MutableComponent = prefixed(Component.literal(text))
 
     /** Convenience: send a prefixed line to the local player's chat. Safe to call from any thread. */
