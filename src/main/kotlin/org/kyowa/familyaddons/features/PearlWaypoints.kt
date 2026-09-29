@@ -491,8 +491,11 @@ object PearlWaypoints {
             for (dp in DoublePearls.dPearls.values) {
                 if (dp.pre != pre) continue
 
+                // Occupancy deliberately does not hide these. Someone standing
+                // on the crate is not a reason to drop the route: the throw is
+                // long, and it wants aiming before the spot clears. Only a
+                // crate called missing ("No Square!") takes one down.
                 val destPlace = preToPlace(dp.drop)
-                if (destPlace != null && destPlace in KuudraOccupancy.occupiedPlaces) continue
                 if (cfg.pearlHideOnMissing && destPlace != null && destPlace in MissingSupplies.missing) continue
 
                 // High-arc solve to the mid-air handoff coordinate.
@@ -834,15 +837,17 @@ object PearlWaypoints {
         for (dp in DoublePearls.dPearls.values) {
             val active = dp.pre == pre
             val destPlace = preToPlace(dp.drop)
-            val occluded = destPlace != null && destPlace in KuudraOccupancy.occupiedPlaces
+            // Occupancy is printed because it is useful to see, not because it
+            // hides anything any more.
+            val occupied = destPlace != null && destPlace in KuudraOccupancy.occupiedPlaces
             val missing = cfg.pearlHideOnMissing && destPlace != null && destPlace in MissingSupplies.missing
             val mark = when {
-                !active   -> "§8[wrong-pre]"
-                occluded  -> "§c[occupied]"
-                missing   -> "§c[missing]"
-                else      -> "§a[shown]"
+                !active -> "§8[wrong-pre]"
+                missing -> "§c[missing]"
+                else    -> "§a[shown]"
             }
-            sb.append("  ").append(mark).append(" §f${dp.id} §7@ ${"%.1f".format(dp.location.x)},${"%.1f".format(dp.location.y)},${"%.1f".format(dp.location.z)}\n")
+            val note = if (occupied) " §8(occupied)" else ""
+            sb.append("  ").append(mark).append(" §f${dp.id} §7@ ${"%.1f".format(dp.location.x)},${"%.1f".format(dp.location.y)},${"%.1f".format(dp.location.z)}").append(note).append("\n")
         }
 
         return sb.toString()
