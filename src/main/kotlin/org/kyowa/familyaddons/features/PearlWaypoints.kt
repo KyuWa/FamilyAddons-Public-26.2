@@ -103,7 +103,26 @@ object PearlWaypoints {
     //   2. the duration measured on the previous grab at this tier/talisman;
     //   3. the table.
     private const val LIVE_MIN_PCT = 15
+    /** Two progress titles this far apart give a usable rate. */
+    private const val SLOPE_MIN_PCT = 20
+    /**
+     * Land this many ticks after the pickup ends. Landing before it ends loses
+     * the crate, so the target is just past the line, not on it.
+     */
+    private const val SAFETY_TICKS = 2
+    /** The furthest auto-tune may shift the cue in either direction. */
+    private const val MAX_TUNE_TICKS = 20
     @Volatile private var estGrabTicks: Int = -1
+
+    // First progress title of this grab at or above LIVE_MIN_PCT. A rate taken
+    // between two titles cancels the delay they both carry; elapsed / pct from
+    // a single title cannot, and multiplies it by 100/pct.
+    @Volatile private var firstPct: Int = -1
+    @Volatile private var firstPctTick: Int = -1
+
+    /** Tick of the teleport that ended this grab's pearl, and whether it has been learned from. */
+    @Volatile private var landTick: Int = -1
+    @Volatile private var landRecorded: Boolean = false
 
     // Wall-clock alongside ticks, to tell whether Hypixel's pickup runs on
     // ticks or on real time (they differ during lag catch-up bursts).
@@ -115,11 +134,43 @@ object PearlWaypoints {
     private fun learnedKey() = "${KuudraState.kuudraTierIndex()}/${FamilyConfigManager.config.kuudra.pearlTalismanTier}" +
         (if (KuudraFuelPhase.isInFuelPhase()) "/fuel" else "")
 
-    /** Total grab length in our tick units, best current estimate. */
+    /**
+     * Total grab length in our tick units, best current estimate.
+     *
+     * What a previous grab at this tier and talisman actually took comes first:
+     * the 0% and 100% titles carry the same delay, so the gap between them is
+     * the true length. The live projection only stands in until there is one.
+     */
     private fun grabTotalTicks(): Int {
-        if (estGrabTicks > 0) return estGrabTicks
         FamilyConfigManager.config.kuudra.pearlLearnedGrabTicks[learnedKey()]?.let { if (it > 0) return it }
+        if (estGrabTicks > 0) return estGrabTicks
         return (getMaxTimeMs() / 50L).toInt()
+    }
+
+    /** Ticks the cue has learned to move by, for this tier and talisman. */
+    private fun landTune(): Int =
+        if (!FamilyConfigManager.config.kuudra.pearlAutoTune) 0
+        else FamilyConfigManager.config.kuudra.pearlLearnedLandTicks[learnedKey()] ?: 0
+
+    /**
+     * Where the pearl actually landed against the end of the pickup, in ticks,
+     * positive for late. Half of the miss goes into the next cue: half, so that
+     * one slow throw or one laggy run cannot swing it.
+     */
+    private fun recordLanding(errorTicks: Int) {
+        val cfg = FamilyConfigManager.config.kuudra
+        if (!cfg.pearlAutoTune || landRecorded) return
+        landRecorded = true
+        val key = learnedKey()
+        val tune = cfg.pearlLearnedLandTicks[key] ?: 0
+        val next = (tune + Math.round((errorTicks - SAFETY_TICKS) / 2.0).toInt())
+            .coerceIn(-MAX_TUNE_TICKS, MAX_TUNE_TICKS)
+        if (next != tune) {
+            cfg.pearlLearnedLandTicks[key] = next
+            FamilyConfigManager.save()
+        }
+        devLog("PearlWaypoints: landing was $errorTicks ticks past the pickup, tune $tune -> $next")
+        devChat("§7Landed §e$errorTicks§7 ticks past the pickup, tune §e$tune§7 → §e$next")
     }
 
     // Measured 2026-09-07: the pickup is a fixed 105 ticks at Infernal while
@@ -135,7 +186,9 @@ object PearlWaypoints {
         val delay = (cfg.pearlTimerDelay.toLong() / 50L).toInt()
         val reaction = (cfg.pearlReactionMs.toLong() / 50L).toInt()
         val dDelay = if (isDoublePearl) (cfg.pearlDPearlLandDelay.toLong() / 50L).toInt() else 0
-        return grabTotalTicks() + dDelay - elapsed - flight + delay - reaction
+        // + SAFETY_TICKS aims just past the end of the pickup; - landTune() is
+        // what the last runs said that aim was actually worth.
+        return grabTotalTicks() + dDelay - elapsed - flight + delay - reaction + SAFETY_TICKS - landTune()
     }
 
     fun onTitle(rawTitle: String) {
@@ -149,13 +202,25 @@ object PearlWaypoints {
                 grabStartMs = System.currentTimeMillis()
                 nowSoundPlayed = false
                 estGrabTicks = -1
+                firstPct = -1
+                firstPctTick = -1
+                landTick = -1
+                landRecorded = false
                 devLog("PearlWaypoints: grab started (title '$plain'), table ${getMaxTimeMs() / 50L} ticks, using ${grabTotalTicks()}")
                 devChat("§7Grab started, expecting §e${grabTotalTicks()}§7 ticks §8(table ${getMaxTimeMs() / 50L})")
             }
             grabbing && pct in 1..99 -> {
                 val elapsed = tickCount - grabStartTick
                 if (pct >= LIVE_MIN_PCT && elapsed > 0) {
-                    estGrabTicks = Math.round(elapsed * 100.0 / pct).toInt()
+                    if (firstPct < 0) {
+                        firstPct = pct
+                        firstPctTick = tickCount
+                    }
+                    val spanPct = pct - firstPct
+                    if (spanPct >= SLOPE_MIN_PCT) {
+                        val perPct = (tickCount - firstPctTick).toDouble() / spanPct
+                        estGrabTicks = Math.round(elapsed + (100 - pct) * perPct).toInt()
+                    }
                 }
             }
             grabbing && pct >= 100 -> finishGrab("100% title")
@@ -172,6 +237,9 @@ object PearlWaypoints {
         lastFinishTick = tickCount
         lastFinishMs = System.currentTimeMillis()
         lastFinishExpectedTick = grabStartTick + grabTotalTicks()
+        // A pearl that landed mid-grab landed early: a negative error, which
+        // pushes the next cue later.
+        if (landTick >= 0) recordLanding(landTick - lastFinishTick)
         devLog("PearlWaypoints: grab wall time ${grabMs} ms for $lastGrabTicks ticks (${"%.1f".format(lastGrabTicks * 1000.0 / grabMs.coerceAtLeast(1))} ticks/s over the grab), expected finish at tick $lastFinishExpectedTick, actual $lastFinishTick")
         if (lastGrabTicks > 10) {
             val cfg = FamilyConfigManager.config.kuudra
@@ -214,10 +282,14 @@ object PearlWaypoints {
         val now = System.currentTimeMillis()
         if (grabbing) {
             val elapsed = tickCount - grabStartTick
+            // Remember it; the error against the real end is only knowable once
+            // the 100% title lands.
+            landTick = tickCount
             devLog("PearlWaypoints: teleport DURING grab at tick $elapsed / ${grabTotalTicks()} expected (${now - grabStartMs} ms in) — landed ${grabTotalTicks() - elapsed} ticks early")
             devChat("§cPearl landed §e${grabTotalTicks() - elapsed}§c ticks before the pickup finished")
         } else if (lastFinishTick >= 0 && now - lastFinishMs < 3000) {
             val late = tickCount - lastFinishTick
+            recordLanding(late)
             devLog("PearlWaypoints: teleport $late ticks / ${now - lastFinishMs} ms after the pickup finished")
             devChat("§7Pearl landed §a$late§7 ticks after the pickup finished")
         }
@@ -766,6 +838,7 @@ object PearlWaypoints {
             .append(" Talisman: §e").append(cfg.pearlTalismanTier).append(" §7|")
             .append(" maxTime: §e").append(getMaxTimeMs()).append("ms\n")
         sb.append("§7Grab model: §e${grabTotalTicks()}§7 ticks (table ${getMaxTimeMs() / 50L}, learned ${cfg.pearlLearnedGrabTicks[learnedKey()] ?: "-"}, live ${if (estGrabTicks > 0) estGrabTicks else "-"})\n")
+        sb.append("§7Cue: §e+$SAFETY_TICKS§7 safety, tune §e${landTune()}§7 ticks (auto §e${cfg.pearlAutoTune}§7)\n")
         sb.append("§7Server tick rate now: §e${"%.1f".format(ServerTickTracker.observedTps())}§7/s")
         if (lastGrabTicks >= 0) {
             sb.append(" §7| last grab: §e$lastGrabTicks§7 ticks vs table §e$lastGrabExpectedTicks§7 (rate then §e${"%.1f".format(lastGrabTps)}§7/s)")

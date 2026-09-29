@@ -520,6 +520,16 @@ class KuudraConfig {
 
     @Expose @JvmField
     @ConfigAccordionId(id = 11)
+    @ConfigOption(name = "Auto Tune", desc = "Watch where the pearl really lands against the end of the pickup and move the NOW cue by half the difference next time, per tier and talisman. Leave this on unless you are tuning the delay by hand.")
+    @ConfigEditorBoolean
+    var pearlAutoTune = true
+
+    /** Learned cue shift per "tier/talisman", in server-tick units. Learned automatically, no GUI. */
+    @Expose @JvmField
+    var pearlLearnedLandTicks: MutableMap<String, Int> = mutableMapOf()
+
+    @Expose @JvmField
+    @ConfigAccordionId(id = 11)
     @ConfigOption(name = "Timer Scale", desc = "Component scale of the flight-time label.")
     @ConfigEditorSlider(minValue = 0.5f, maxValue = 4.0f, minStep = 0.1f)
     var pearlTimerScale = 3.0f
