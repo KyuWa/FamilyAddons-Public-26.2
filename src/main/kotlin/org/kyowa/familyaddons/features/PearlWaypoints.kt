@@ -156,6 +156,8 @@ object PearlWaypoints {
      * whole flight — more on a long throw than a short one, which is why no
      * single learned offset ever settled it.
      */
+    private fun msInOurTicks(ms: Float): Int = Math.round(ms / ourTickMs()).toInt()
+
     private fun flightInOurTicks(flightTimeMs: Long): Int =
         Math.round(flightTimeMs / ourTickMs()).toInt()
 
@@ -222,9 +224,11 @@ object PearlWaypoints {
         val cfg = FamilyConfigManager.config.kuudra
         val elapsed = (tickCount - grabStartTick).coerceAtLeast(0)
         val flight = flightInOurTicks(flightTimeMs)
-        val delay = (cfg.pearlTimerDelay.toLong() / 50L).toInt()
-        val reaction = (cfg.pearlReactionMs.toLong() / 50L).toInt()
-        val dDelay = if (isDoublePearl) (cfg.pearlDPearlLandDelay.toLong() / 50L).toInt() else 0
+        // These are set in milliseconds, so they convert the same way the
+        // flight does. Counted at a flat fifty they were each a little short.
+        val delay = msInOurTicks(cfg.pearlTimerDelay)
+        val reaction = msInOurTicks(cfg.pearlReactionMs)
+        val dDelay = if (isDoublePearl) msInOurTicks(cfg.pearlDPearlLandDelay) else 0
         // + SAFETY_TICKS aims just past the end of the pickup; - landTune() is
         // what the last runs said that aim was actually worth.
         return grabTotalTicks() + dDelay - elapsed - flight + delay - reaction + SAFETY_TICKS - landTune()
