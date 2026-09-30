@@ -524,9 +524,22 @@ class KuudraConfig {
     @ConfigEditorBoolean
     var pearlAutoTune = true
 
-    /** Learned cue shift per "tier/talisman", in server-tick units. Learned automatically, no GUI. */
+    /**
+     * Learned cue shift per "tier/talisman", in server-tick units. Learned
+     * automatically, no GUI. Named apart from the first attempt at this on
+     * purpose: those numbers grew around a flight that was counted on the wrong
+     * clock, so they are worth nothing now and are left behind rather than
+     * carried in.
+     */
     @Expose @JvmField
-    var pearlLearnedLandTicks: MutableMap<String, Int> = mutableMapOf()
+    var pearlLandTune: MutableMap<String, Int> = mutableMapOf()
+
+    /**
+     * What one observed server tick is worth in milliseconds, measured from
+     * finished pickups. The solver counts a pearl's flight in fifties, so this
+     * is what puts the two on one clock. Learned automatically, no GUI.
+     */
+    @Expose @JvmField var pearlTickMs = 50f
 
     @Expose @JvmField
     @ConfigAccordionId(id = 11)

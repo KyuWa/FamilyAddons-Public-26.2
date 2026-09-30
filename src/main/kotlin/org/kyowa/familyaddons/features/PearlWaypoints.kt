@@ -107,9 +107,10 @@ object PearlWaypoints {
     private const val SLOPE_MIN_PCT = 20
     /**
      * Land this many ticks after the pickup ends. Landing before it ends loses
-     * the crate, so the target is just past the line, not on it.
+     * the crate and landing after it costs a moment of carrying, so the target
+     * sits clear of the line rather than on it.
      */
-    private const val SAFETY_TICKS = 2
+    private const val SAFETY_TICKS = 4
     /** The furthest auto-tune may shift the cue in either direction. */
     private const val MAX_TUNE_TICKS = 20
     @Volatile private var estGrabTicks: Int = -1
@@ -147,26 +148,64 @@ object PearlWaypoints {
         return (getMaxTimeMs() / 50L).toInt()
     }
 
+    /**
+     * The solver counts a pearl's flight in twenty-a-second ticks. Everything
+     * else here is counted in the ticks we see arrive, and Hypixel sends those
+     * at its own rate, so the two have to be put on one clock before they can
+     * be subtracted. Left mixed, the cue missed by the difference across the
+     * whole flight — more on a long throw than a short one, which is why no
+     * single learned offset ever settled it.
+     */
+    private fun flightInOurTicks(flightTimeMs: Long): Int =
+        Math.round(flightTimeMs / ourTickMs()).toInt()
+
+    /**
+     * What one of our ticks is worth in milliseconds. Measured from finished
+     * pickups, which time themselves both ways; a five-second packet rate is
+     * too jumpy to divide a throw by. Fifty until something has been measured.
+     */
+    private fun ourTickMs(): Double {
+        val learned = FamilyConfigManager.config.kuudra.pearlTickMs.toDouble()
+        return if (learned in 25.0..70.0) learned else 50.0
+    }
+
+    /** One finished pickup, timed both ways, folded into that figure. */
+    private fun learnTickMs(ticks: Int, ms: Long) {
+        if (ticks < 20 || ms <= 0L) return
+        val measured = ms.toDouble() / ticks
+        if (measured !in 25.0..70.0) return
+        val cfg = FamilyConfigManager.config.kuudra
+        val prev = cfg.pearlTickMs.toDouble()
+        // Weighted towards what is already known: this is a property of the
+        // server, not of the run.
+        val next = if (prev in 25.0..70.0) prev * 0.75 + measured * 0.25 else measured
+        cfg.pearlTickMs = next.toFloat()
+    }
+
     /** Ticks the cue has learned to move by, for this tier and talisman. */
     private fun landTune(): Int =
         if (!FamilyConfigManager.config.kuudra.pearlAutoTune) 0
-        else FamilyConfigManager.config.kuudra.pearlLearnedLandTicks[learnedKey()] ?: 0
+        else FamilyConfigManager.config.kuudra.pearlLandTune[learnedKey()] ?: 0
 
     /**
      * Where the pearl actually landed against the end of the pickup, in ticks,
-     * positive for late. Half of the miss goes into the next cue: half, so that
-     * one slow throw or one laggy run cannot swing it.
+     * positive for late.
+     *
+     * A late landing costs a moment of carrying, so half of it goes into the
+     * next cue and one slow throw cannot swing it. An early landing costs the
+     * crate, so all of it does: that is the mistake worth not repeating.
      */
     private fun recordLanding(errorTicks: Int) {
         val cfg = FamilyConfigManager.config.kuudra
         if (!cfg.pearlAutoTune || landRecorded) return
         landRecorded = true
         val key = learnedKey()
-        val tune = cfg.pearlLearnedLandTicks[key] ?: 0
-        val next = (tune + Math.round((errorTicks - SAFETY_TICKS) / 2.0).toInt())
-            .coerceIn(-MAX_TUNE_TICKS, MAX_TUNE_TICKS)
+        val tune = cfg.pearlLandTune[key] ?: 0
+        val miss = errorTicks - SAFETY_TICKS
+        val step = if (miss < 0) miss else Math.round(miss / 2.0).toInt()
+        val next = (tune + step).coerceIn(-MAX_TUNE_TICKS, MAX_TUNE_TICKS)
         if (next != tune) {
-            cfg.pearlLearnedLandTicks[key] = next
+            cfg.pearlLandTune[key] = next
             FamilyConfigManager.save()
         }
         devLog("PearlWaypoints: landing was $errorTicks ticks past the pickup, tune $tune -> $next")
@@ -182,7 +221,7 @@ object PearlWaypoints {
     private fun remainingTicks(flightTimeMs: Long, isDoublePearl: Boolean): Int {
         val cfg = FamilyConfigManager.config.kuudra
         val elapsed = (tickCount - grabStartTick).coerceAtLeast(0)
-        val flight = Math.round(flightTimeMs / 50.0).toInt()
+        val flight = flightInOurTicks(flightTimeMs)
         val delay = (cfg.pearlTimerDelay.toLong() / 50L).toInt()
         val reaction = (cfg.pearlReactionMs.toLong() / 50L).toInt()
         val dDelay = if (isDoublePearl) (cfg.pearlDPearlLandDelay.toLong() / 50L).toInt() else 0
@@ -241,6 +280,7 @@ object PearlWaypoints {
         // pushes the next cue later.
         if (landTick >= 0) recordLanding(landTick - lastFinishTick)
         devLog("PearlWaypoints: grab wall time ${grabMs} ms for $lastGrabTicks ticks (${"%.1f".format(lastGrabTicks * 1000.0 / grabMs.coerceAtLeast(1))} ticks/s over the grab), expected finish at tick $lastFinishExpectedTick, actual $lastFinishTick")
+        learnTickMs(lastGrabTicks, grabMs)
         if (lastGrabTicks > 10) {
             val cfg = FamilyConfigManager.config.kuudra
             val key = learnedKey()
@@ -347,6 +387,13 @@ object PearlWaypoints {
                 plain == "You retrieved a Ballista Fuel Cell from the Lava!" -> finishGrab("chat")
             plain in GRAB_LOSS_LINES || plain.endsWith("slipped out of your hands!") -> {
                 if (grabbing) devLog("PearlWaypoints: grab cancelled after ${(tickCount - grabStartTick).coerceAtLeast(0)} server ticks / ${System.currentTimeMillis() - grabStartMs} ms ('$plain'), model expected ${grabTotalTicks()} ticks")
+                // The chest slipping is what an early pearl looks like from
+                // here, and it is the outcome the cue most needs to hear about.
+                // The pickup never finished, so the model's own end stands in
+                // for it: the sign is right even when the size is a guess.
+                if (grabbing && landTick >= 0) {
+                    recordLanding(landTick - (grabStartTick + grabTotalTicks()))
+                }
                 clearGrab()
             }
             else -> {
@@ -838,7 +885,8 @@ object PearlWaypoints {
             .append(" Talisman: §e").append(cfg.pearlTalismanTier).append(" §7|")
             .append(" maxTime: §e").append(getMaxTimeMs()).append("ms\n")
         sb.append("§7Grab model: §e${grabTotalTicks()}§7 ticks (table ${getMaxTimeMs() / 50L}, learned ${cfg.pearlLearnedGrabTicks[learnedKey()] ?: "-"}, live ${if (estGrabTicks > 0) estGrabTicks else "-"})\n")
-        sb.append("§7Cue: §e+$SAFETY_TICKS§7 safety, tune §e${landTune()}§7 ticks (auto §e${cfg.pearlAutoTune}§7)\n")
+        sb.append("§7Cue: §e+$SAFETY_TICKS§7 safety, tune §e${landTune()}§7 ticks (auto §e${cfg.pearlAutoTune}§7)")
+            .append(" §7| our tick: §e${"%.1f".format(ourTickMs())}§7ms\n")
         sb.append("§7Server tick rate now: §e${"%.1f".format(ServerTickTracker.observedTps())}§7/s")
         if (lastGrabTicks >= 0) {
             sb.append(" §7| last grab: §e$lastGrabTicks§7 ticks vs table §e$lastGrabExpectedTicks§7 (rate then §e${"%.1f".format(lastGrabTps)}§7/s)")
